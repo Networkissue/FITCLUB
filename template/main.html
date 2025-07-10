@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Boxicons for icons -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="/staticfile/main.css" />
+
+    <!-- External JS -->
+    <script src="/design/main.js" defer></script>
+
+    <!-- SMTP -->
+     <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+    <title>SIGNIN & SIGNUP | The Gym</title>
+  </head>
+  <body>
+    <div id="container" class="container">
+      <!-- FORM SECTION SIGNUP-->
+      <div class="row">
+        <div class="col align-items-center flex-col sign-up">
+          <div id="snackbar">
+            <span class="snackbar-icon"></span>
+            <span id="snackbar-message">Error message here</span>
+          </div>
+          <div class="form-wrapper align-items-center">
+            <div class="form sign-up">
+              <div class="input-group">
+                <i class="bx bxs-user"></i>
+                <input id="signupUsername" type="text" placeholder="Username" />
+              </div>
+              <div class="input-group">
+                <i class="bx bx-mail-send"></i>
+                <input id="signupEmail" type="email" placeholder="xyz@gmail.com" />
+              </div>
+              <div class="input-group">
+                <i class="bx bx-mobile"></i>
+                <input id="signupMobile" type="number" placeholder="+91-9876543210" />
+              </div>
+              <div class="input-group">
+                <i class="bx bx-user"></i>
+                <input list="gender-options" type="text" id="gender" placeholder="Male/Female/Others" />
+                <datalist id="gender-options">
+                  <option value="Male">
+                  <option value="Female">
+                  <option value="Others">
+                </datalist>
+              </div>
+
+              <button id="signupBtn">Sign up</button>
+              <p>
+                <span>Already have an account?</span>
+                <b onclick="toggle()" class="pointer">Sign in here</b>
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- END SIGN UP -->
+
+        <!-- SIGN IN -->
+        <div class="col align-items-center flex-col sign-in">
+          <div class="form-wrapper align-items-center">
+            <div class="form sign-in">
+              <div class="input-group">
+                <i class="bx bxs-mobile"></i>
+                <input type="text" placeholder="mobile" />
+              </div>
+              <div class="input-group">
+                <i class="bx bxs-lock-alt"></i>
+                <input type="captcha" placeholder="Enter captcha" />
+              </div>
+              <div id="captcha"></div>
+              <input type="text" id="generateCaptchaBtn" value="Refresh CAPTCHA" readonly style="cursor:pointer;" />
+              <input type="text" id="captchaInput" placeholder="" autocomplete="off" required />
+              <br/>
+              <button type="submit" id="sendOtpBtn">Submit</button>
+              <!-- <button id="sendOtpBtn">Send OTP</button> -->
+              <button id="signinBtn" style="display: none;">Sign in</button>
+              <!-- <p><b>Forgot password?</b></p> -->
+              <p>
+                <span>Don't have an account?</span>
+                <b onclick="toggle()" class="pointer">Sign up here</b> <br>
+                <a href="/" id="back_home" style="text-decoration: none; font-weight: 500; position: relative; padding: 10px; ">Back to Home</a>
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- END SIGN IN -->
+      </div>
+      <!-- END FORM SECTION -->
+
+      <!-- CONTENT SECTION -->
+      <div class="row content-row">
+        <!-- SIGN IN CONTENT -->
+        <div class="col align-items-center flex-col">
+          <div class="text sign-in">
+            <h2>Welcome</h2>
+          </div>
+          <div class="img sign-in"></div>
+        </div>
+
+        <!-- SIGN UP CONTENT -->
+        <div class="col align-items-center flex-col">
+          <div class="img sign-up"></div>
+          <div class="text sign-up">
+            <h2>Join with us</h2>
+          </div>
+        </div>
+      </div>
+      <!-- END CONTENT SECTION -->
+    </div>
+  </body>
+</html>
+
+
