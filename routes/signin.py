@@ -11,6 +11,8 @@ from email.utils import formataddr
 import smtplib
 from email.mime.text import MIMEText
 import razorpay
+from dateutil.parser import parse as parse_datetime
+
 
 signin_router = APIRouter()
 templates = Jinja2Templates(directory="template")
@@ -23,6 +25,16 @@ otp_storage = {}  # { email: { 'otp': '123456', 'expires': datetime }}
 
 client = razorpay.Client(auth=("rzp_test_pibrBAMVpfKNFN", "nzEjD1hevJTvRenH2oJzz1Gn"))
 
+# ✅ Define safe parser
+def safe_parse_date(value):
+    if isinstance(value, datetime):
+        return value
+    if isinstance(value, str):
+        try:
+            return parse_datetime(value)
+        except Exception:
+            return None
+    return None
 
 def calculate_next_due_date(payment_date: str) -> str:
     """Calculate next due date (payment date + 30 days)"""
@@ -45,6 +57,39 @@ def get_payment_cycle_range(date_str: str):
     cycle_end = next_month_first.strftime("%B, %Y")       # e.g., September, 2025
 
     return cycle_start, cycle_end
+
+def send_approval_status_email(to_email: str, name: str, mobile: str, plan: str, status: str):
+    sender_email = "rohithvaddepally4@gmail.com"
+    sender_name = "The Gym By Johnson"
+    sender_password = "majjjuadrgtxybqv"
+
+    subject = f"Offline Payment {status.title()} - {plan} Plan"
+    
+    color = "green" if status == "approved" else "red"
+
+    body = f"""
+    <p>Hi {name},</p>
+    <p>Your offline payment request for the <strong>{plan}</strong> plan has been 
+    <b style="color:{color}; text-transform:uppercase;">{status}</b>.</p>
+    <p><b>Mobile:</b> {mobile}</p>
+    <p>If you have any questions, feel free to contact us.</p>
+    <br>
+    <p>Thanks,<br><strong>{sender_name}</strong></p>
+    """
+
+    msg = MIMEText(body, "html")
+    msg["Subject"] = subject
+    msg["From"] = formataddr((sender_name, sender_email))
+    msg["To"] = to_email
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, to_email, msg.as_string())
+        print(f"✅ Status email sent to {to_email}")
+    except Exception as e:
+        print(f"❌ Failed to send email to {to_email}: {e}")
+
 
 def send_payment_status_email(receiver_email: str, customer_name: str, status: str):
     sender_email = "rohithvaddepally4@gmail.com"
@@ -217,35 +262,28 @@ def verify_token(request: Request):
     except HTTPException as e:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-
 @signin_router.get("/pro")
 async def user_profile(request: Request):
-    user = get_user_by_cookie(request)  # ✅ get user from JWT in cookie
+    user = get_user_by_cookie(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
-    # ✅ Convert stored dates to datetime
     last_payment_str = user.get("last_payment_date")
     next_due_str = user.get("next_due_date")
 
-    try:
-        last_payment_date = datetime.strptime(last_payment_str, "%Y-%m-%d") if last_payment_str else None
-        next_due_date = datetime.strptime(next_due_str, "%Y-%m-%d") if next_due_str else None
-    except ValueError:
-        last_payment_date = None
-        next_due_date = None
+    last_payment_date = safe_parse_date(last_payment_str)
+    next_due_date = safe_parse_date(next_due_str)
 
-    # ✅ Calculate payment cycle
     if last_payment_date and next_due_date:
-        payment_cycle = f"{last_payment_date.strftime('%B 1, %Y')} → {next_due_date.strftime('%B 1, %Y')}"
+        payment_cycle = f"{last_payment_date.strftime('%B %d, %Y')} → {next_due_date.strftime('%B %d, %Y')}"
     else:
         payment_cycle = "Monthly (30 days)"
 
-    # ✅ Calculate days until due
     if next_due_date:
         days_until_due = (next_due_date - datetime.utcnow()).days
     else:
         days_until_due = None
 
-    # ✅ Determine payment status
     if days_until_due is None:
         payment_status = "inactive"
     elif days_until_due < 0:
@@ -255,7 +293,6 @@ async def user_profile(request: Request):
     else:
         payment_status = "active"
 
-    # ✅ Clean user dict
     cleaned_user = {
         "id": user.get("id"),
         "name": user.get("name", user.get("username")),
@@ -269,14 +306,22 @@ async def user_profile(request: Request):
         "next_due_date": next_due_str
     }
 
-    # ✅ Send everything directly to template
+    # 🔍 Fetch the latest membership from payment_history
+    latest_payment = payment_history.find_one(
+        {"user_id": user["id"], "membership": {"$ne": "NA"}},
+        sort=[("date", -1)]
+    )
+    membership_type = latest_payment.get("membership", "NA") if latest_payment else "NA"
+
     return templates.TemplateResponse("profile.html", {
         "request": request,
         "user": cleaned_user,
         "payment_status": payment_status,
         "days_until_due": days_until_due,
-        "payment_cycle": payment_cycle
+        "payment_cycle": payment_cycle,
+        "membership_type": membership_type
     })
+
 
 
 @signin_router.post("/api/update-profile")
@@ -407,15 +452,15 @@ async def admin_dashboard(request: Request):
         return JSONResponse(status_code=403, content={"status": "error", "detail": "Unauthorized"})
     
     return templates.TemplateResponse("admin.html", {"request": request})
-
-# users list 
 @signin_router.get("/api/users")
 async def api_get_users(request: Request, page: int = Query(1), limit: int = Query(5), search: str = ""):
     user = get_user_by_cookie(request)
     if not user or user.get("role") != "admin":
         return JSONResponse(status_code=403, content={"status": "error", "detail": "Unauthorized"})
 
-    query = {}
+    # Always exclude admin users
+    base_filter = {"role": {"$ne": "admin"}}
+
     if search:
         user_ids_with_status = [
             p["user_id"] for p in payment_due.find(
@@ -423,14 +468,15 @@ async def api_get_users(request: Request, page: int = Query(1), limit: int = Que
             )
         ]
 
-        query["$or"] = [
+        # Combine with search filters
+        base_filter["$or"] = [
             {"id": {"$regex": search, "$options": "i"}},
             {"username": {"$regex": search, "$options": "i"}},
             {"id": {"$in": user_ids_with_status}}
         ]
 
     skip = (page - 1) * limit
-    users_cursor = user_data.find(query, {
+    users_cursor = user_data.find(base_filter, {
         "_id": 0,
         "id": 1,
         "username": 1,
@@ -444,27 +490,37 @@ async def api_get_users(request: Request, page: int = Query(1), limit: int = Que
     users = list(users_cursor)
 
     for u in users:
-        # Get status from payment_due
+        # Fix datetime fields
+        if isinstance(u.get("joining_date"), datetime):
+            u["joining_date"] = u["joining_date"].strftime("%Y-%m-%d")
+        if isinstance(u.get("last_payment_date"), datetime):
+            u["last_payment_date"] = u["last_payment_date"].strftime("%Y-%m-%d")
+        if isinstance(u.get("next_due_date"), datetime):
+            u["next_due_date"] = u["next_due_date"].strftime("%Y-%m-%d")
+
+        # Add status
         payment = payment_due.find_one({"user_id": u["id"]}, {"_id": 0, "status": 1})
         u["status"] = payment["status"] if payment else "unknown"
 
-        # Get membership from latest payment history
+        # Add membership
         latest_payment = payment_history.find_one(
             {"user_id": u["id"]},
-            sort=[("date", -1)],  # sort by newest
+            sort=[("next_due", -1)],
             projection={"membership": 1}
         )
         u["membership"] = latest_payment["membership"] if latest_payment and "membership" in latest_payment else "NA"
 
-    total_users = user_data.count_documents(query)
+    total_users = user_data.count_documents(base_filter)
     total_pages = (total_users + limit - 1) // limit
 
     return JSONResponse(status_code=200, content={
         "status": "success",
         "users": users,
         "page": page,
-        "total_pages": total_pages
+        "total_pages": total_pages,
+        "total_users": total_users  # ✅ now excludes admin
     })
+
 
 #forgot-password
 @signin_router.get("/forgot-password")
@@ -745,10 +801,12 @@ async def get_offline_requests(
         email = r.get("email")
         user_doc = user_data.find_one({"email": email})
         user_id = user_doc.get("id") if user_doc else "NA"
+        mobile = user_doc.get("mobile", "NA")
 
         requests.append({
             "user_id": user_id,
             "email": email,
+            "mobile": mobile,
             "amount": r.get("amount", 0),
             "plan": r.get("plan", "NA"),
             "status": r.get("status", "pending"),
@@ -764,6 +822,9 @@ async def get_offline_requests(
 
 
 #approve request
+from dateutil.parser import parse as parse_date
+from datetime import datetime, timedelta
+from fastapi import HTTPException
 
 @signin_router.post("/api/offline-requests/{user_id}/approve")
 async def approve_offline_request(user_id: str, request: Request):
@@ -771,53 +832,72 @@ async def approve_offline_request(user_id: str, request: Request):
     offline_requests = db["offline_payments"]
     users = db["Users"]
 
+    # Find user
     user = await users.find_one({"id": user_id})
     if not user:
-        return {"status": "error", "message": "User not found"}
+        raise HTTPException(status_code=404, detail="User not found")
 
     email = user.get("email")
     if not email:
-        return {"status": "error", "message": "Email not found"}
+        raise HTTPException(status_code=400, detail="User email not found")
 
+    # Get latest pending offline request
     req_doc = await offline_requests.find_one(
         {"email": email, "status": "pending"},
         sort=[("requestedAt", -1)]
     )
     if not req_doc:
-        return {"status": "error", "message": "No pending request found"}
+        raise HTTPException(status_code=404, detail="No pending request found")
 
-    plan = req_doc.get("plan")
-    if plan.lower() == "basic":
-        new_due_date = datetime.utcnow() + timedelta(days=30)
-    elif plan.lower() == "premium":
-        new_due_date = datetime.utcnow() + timedelta(days=7)
-    elif plan.lower() == "pro":
-        new_due_date = datetime.utcnow() + timedelta(days=30)
+    plan = req_doc.get("plan", "").lower()
+    requested_at = req_doc.get("requestedAt")
+
+    if not requested_at:
+        raise HTTPException(status_code=400, detail="Missing requestedAt")
+
+    if isinstance(requested_at, str):
+        try:
+            requested_at = parse_date(requested_at)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid requestedAt format")
+
+    # Set duration based on plan
+    if plan == "basic":
+        new_due_date = requested_at + timedelta(days=30)
+    elif plan == "premium":
+        new_due_date = requested_at + timedelta(days=7)
+    elif plan == "pro":
+        new_due_date = requested_at + timedelta(days=30)
     else:
-        new_due_date = datetime.utcnow()
+        raise HTTPException(status_code=400, detail="Unknown membership plan")
 
+    # Update offline request status
     await offline_requests.update_one(
-        {"email": email, "status": "pending"},
-        {"$set": {"status": "approved"}}
+        {"_id": req_doc["_id"]},
+        {"$set": {"status": "approved", "resolved_at": datetime.utcnow()}}
     )
 
+    # Update user data
     await users.update_one(
         {"id": user_id},
         {
             "$set": {
-                "last_payment_due": new_due_date,
+                "last_payment_date": requested_at,
+                "next_due_date": new_due_date,
                 "status": "active"
             }
         }
     )
 
-    return {"status": "success", "message": "Approved using user_id"}
-
-
+    return {"status": "success", "message": f"User {user_id} approved successfully"}
 
 #update request
 @signin_router.post("/admin/offline-request/update")
 async def update_offline_request(request: Request):
+    admin_user = get_user_by_cookie(request)  # ✅ Confirm admin is logged in
+    if not admin_user or admin_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Unauthorized")
+
     data = await request.json()
     user_id = data.get("user_id")
     action = data.get("action")
@@ -828,17 +908,20 @@ async def update_offline_request(request: Request):
     if action not in ["approve", "reject"]:
         raise HTTPException(status_code=400, detail="Invalid action")
 
-    # ✅ Async DB call
-    user = user_data.find_one({"id": user_id})
-    if not user:
+    # ✅ Lookup the target user by ID
+    target_user = user_data.find_one({"id": user_id})
+    if not target_user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    email = user.get("email")
+    if target_user.get("role") == "admin":
+        raise HTTPException(status_code=400, detail="Cannot approve membership for admin")
+
+    email = target_user.get("email")
     if not email:
         raise HTTPException(status_code=404, detail="User email not found")
 
-    # ✅ Find the latest pending request by email
-    offline_request =  offline_payments.find_one(
+    # ✅ Fetch the user's pending offline request
+    offline_request = offline_payments.find_one(
         {"email": email, "status": "pending"},
         sort=[("requestedAt", -1)]
     )
@@ -851,38 +934,88 @@ async def update_offline_request(request: Request):
 
     if action == "approve":
         plan = get_membership_plan(amount)
+        requested_at = offline_request.get("requestedAt")
+
+        if not requested_at:
+            raise HTTPException(status_code=400, detail="Missing requestedAt timestamp")
+
+        if isinstance(requested_at, str):
+            requested_at = parse(requested_at)
+
+        due_date = requested_at + timedelta(days=30)
         now = datetime.utcnow()
 
-        if plan == "Basic":
-            due_date = now + timedelta(days=30)
-        elif plan == "Premium":
-            due_date = now + timedelta(days=7)
-        elif plan == "Pro":
-            due_date = now + timedelta(days=30)
-        else:
-            due_date = now  # fallback
-
-        # ✅ Update offline payment
+        # ✅ Step 1: Update offline payment record
         offline_payments.update_one(
             {"email": email, "status": "pending"},
-            {"$set": {"status": action, "resolved_at": datetime.utcnow()}}
+            {"$set": {"status": "approved", "resolved_at": now}}
         )
-        # ✅ Update user
+
+        # ✅ Step 2: Update target user's user_data
         user_data.update_one(
             {"id": user_id},
             {
                 "$set": {
                     "status": "active",
-                    "last_payment_due": due_date.strftime("%Y-%m-%d")
+                    "last_payment_date": requested_at,
+                    "next_due_date": due_date
                 }
             }
         )
+
+        # ✅ Step 3: Update or upsert payment_due
+        payment_due.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "last_payment": requested_at,
+                    "next_due": due_date,
+                    "status": "active"
+                }
+            },
+            upsert=True
+        )
+
+        # ✅ Step 4: Insert into payment_history only if not duplicate
+        existing = payment_history.find_one({
+            "user_id": user_id,
+            "date": requested_at
+        })
+        if not existing:
+            payment_history.insert_one({
+                "user_id": user_id,
+                "amount": amount,
+                "membership": plan,
+                "date": requested_at,
+                "next_due": due_date,
+                "status": "active"
+            })
+
+        # ✅ Step 5: Send email notification to user
+        send_approval_status_email(
+            to_email=email,
+            name=target_user.get("username", "Member"),
+            mobile=target_user.get("mobile", "NA"),
+            plan=plan.capitalize(),
+            status="approved"
+        )
+
 
         return JSONResponse(content={"success": True, "message": "Approved successfully"})
 
     elif action == "reject":
         offline_payments.update_one(
             {"email": email, "status": "pending"},
-            {"$set": {"status": "Rejected"}}
+            {"$set": {"status": "rejected"}}
         )
+
+        # ✅ Send rejection email
+        send_approval_status_email(
+            to_email=email,
+            name=target_user.get("username", "Member"),
+            mobile=target_user.get("mobile", "NA"),
+            plan=get_membership_plan(offline_request.get("amount", 0)).capitalize(),
+            status="rejected"
+        )
+
         return JSONResponse(content={"success": True, "message": "Rejected successfully"})

@@ -133,6 +133,23 @@
         font-size: 14px;
       }
     }
+
+  .spinner {
+    margin-top: 1rem;
+    width: 40px;
+    height: 40px;
+    border: 5px solid #ccc;
+    border-top: 5px solid #f0860d;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   </style>
 </head>
 <body>
@@ -143,6 +160,14 @@
     <button class="btn-online" id="payOnlineBtn">Pay Online</button>
     <button class="btn-offline" id="payOfflineBtn">Pay Cash</button>
   </div>
+
+ 
+  <!-- Loading Spinner -->
+  <div id="spinnerOverlay" class="modal-overlay" style="display: none; z-index: 999;">
+    <div style="color: white; font-size: 1.2rem;">Processing Payment...</div>
+    <div class="spinner"></div>
+  </div>
+
 
   <!-- Modal -->
   <div class="modal-overlay" id="modalOverlay">
@@ -215,25 +240,35 @@
     });
 
     document.getElementById("payOfflineBtn").addEventListener("click", async () => {
+      const spinnerOverlay = document.getElementById("spinnerOverlay");
+      spinnerOverlay.style.display = "flex"; // Show spinner
 
-        const formData = new URLSearchParams();
-        formData.append("amount", parseInt(amount));
+      const formData = new URLSearchParams();
+      formData.append("amount", parseInt(amount));
 
+      try {
         const response = await fetch("/offline-payment-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        credentials: "include",
-        body: formData
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          credentials: "include",
+          body: formData
         });
 
+        spinnerOverlay.style.display = "none"; // Hide spinner
 
-      if (response.ok) {
-        showModal("Request Submitted", "Please pay at the gym to complete your membership.", "/");
-      } else {
-        const resJson = await response.json();
-        showModal("Request Failed", resJson.message || "Unable to submit offline request.");
+        if (response.ok) {
+          showModal("Request Submitted", "Please pay at the gym to complete your membership.", "/");
+        } else {
+          const resJson = await response.json();
+          showModal("Request Failed", resJson.message || "Unable to submit offline request.");
+        }
+      } catch (err) {
+        spinnerOverlay.style.display = "none";
+        showModal("Error", "Network error. Please try again.");
       }
     });
+
+  
   </script>
 </body>
 </html>

@@ -87,7 +87,7 @@
         }
 
         thead {
-        background-color: #1f2937;
+        background-color: #1f1e1d;
         color: white;
         }
 
@@ -450,6 +450,14 @@
             border-color: #1f2937;
         }
 
+        .total-users {
+            font-size: 18px;
+            color: #ffffff;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+
         </style>
 </head>
 <body>
@@ -459,11 +467,11 @@
                 <div class="gym-logo"></div>
                 <nav class="header-nav">
                     <!-- <a href="/" class="nav-btn"><i class="fas fa-home"></i> Home</a> -->
+                     <button class="home-btn" id="home-btn">
+                        <i class="fas fa-home"></i> Home
+                    </button>
                     <button class="home-btn" id="offline-requests-btn">
                         <i class="fas fa-file-alt"></i> Offline Requests
-                    </button>
-                    <button class="home-btn" id="home-btn">
-                        <i class="fas fa-home"></i> Home
                     </button>
                     <!-- <a href="/admin" class="nav-btn active"><i class="fas fa-users"></i> User List</a> -->
                     <button class="logout-btn" id="logout-btn">
@@ -488,6 +496,7 @@
             <div class="section-header">
                 <h2><i class="fas fa-users"></i> All Users</h2>
             </div>
+            <div class="total-users" id="total-users" style="text-align:center; margin-bottom: 10px; font-weight: bold;"></div>
             <div class="membership-card">
               <table id="user-table">
                 <thead>
@@ -517,6 +526,7 @@
                             <option value="10">10</option>
                             <option value="25">25</option>
                         </select>
+
                     </div>
 
                     <!-- <div>
@@ -547,6 +557,11 @@
                 return;
             }
 
+            window.onload = () => {
+                loadUsers(); // ✅ triggers fetching and rendering users + total count
+            };
+
+
             let currentPage = 1;
             let limit = 5;
             let searchQuery = "";
@@ -561,6 +576,8 @@
                 .then(res => res.json())
                 .then(data => {
                     console.log("Fetched data:", data); // debug
+                    // ✅ Update total users
+                    document.getElementById("total-users").textContent = `Total Users: ${data.total_users}`;
 
                     const tbody = document.querySelector("#user-table tbody");
                     if (!tbody) {
@@ -676,6 +693,10 @@
                 currentPage = 1;
                 loadUsers(currentPage);
             });
+
+            //total-users
+            // document.getElementById("total-users").textContent = `Total Users: ${data.total_users}`;
+
 
             // Initial fetch (moved outside DOMContentLoaded because it's already too late)
             loadUsers(currentPage);

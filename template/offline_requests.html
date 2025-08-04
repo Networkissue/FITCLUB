@@ -1,203 +1,44 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Offline Payment Requests</title>
-  <link rel="stylesheet" href="/staticfile/admin.css" />
-  <style>
-    .request-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-    }
-    .request-table th, .request-table td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    .request-table th {
-      background-color: #f0860d;
-      color: white;
-    }
-    .status-pending {
-      color: orange;
-    }
-  </style>
-</head>
-<body>
-  <section class="container">
-    <h2>Offline Payment Requests</h2>
-
-    <div class="filters">
-        <input type="text" id="searchInput" placeholder="Search by email..." />
-        <select id="statusFilter">
-        <option value="">All</option>
-        <option value="pending">Pending</option>
-        <option value="approved">Approved</option>
-        <option value="rejected">Rejected</option>
-        </select>
-    </div>
-
-    <table>
-        <thead>
-        <tr>
-            <th>Email</th>
-            <th>Amount</th>
-            <th>Plan</th>
-            <th>Status</th>
-            <th>Requested At</th>
-        </tr>
-        </thead>
-        <tbody id="requestsBody"></tbody>
-    </table>
-
-    <div id="pagination"></div>
-  </section>
-
-
-  <script>
-    const tbody = document.getElementById("requestsBody");
-    const pagination = document.getElementById("pagination");
-    const searchInput = document.getElementById("searchInput");
-    const statusFilter = document.getElementById("statusFilter");
-
-    let currentPage = 1;
-
-    async function loadOfflineRequests(page = 1, search = "", status = "") {
-    const res = await fetch(`/api/offline-requests?page=${page}&search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}`, {
-        credentials: "include"
-    });
-    const data = await res.json();
-
-    if (data.status !== "success") {
-        tbody.innerHTML = "<tr><td colspan='5'>Failed to load data</td></tr>";
-        return;
-    }
-
-    tbody.innerHTML = "";
-
-    data.requests.forEach(req => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-        <td>${req.email}</td>
-        <td>₹${req.amount}</td>
-        <td>${req.plan}</td>
-        <td class="${req.status === 'pending' ? 'status-pending' : ''}">${req.status}</td>
-        <td>${req.requestedAt}</td>
-        `;
-        tbody.appendChild(row);
-    });
-
-    renderPagination(data.page, data.total_pages);
-    }
-
-    function renderPagination(current, total) {
-    pagination.innerHTML = "";
-    for (let i = 1; i <= total; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = i;
-        if (i === current) btn.disabled = true;
-        btn.addEventListener("click", () => {
-        currentPage = i;
-        loadOfflineRequests(currentPage, searchInput.value, statusFilter.value);
-        });
-        pagination.appendChild(btn);
-    }
-    }
-
-    searchInput.addEventListener("input", () => {
-    loadOfflineRequests(1, searchInput.value, statusFilter.value);
-    });
-
-    statusFilter.addEventListener("change", () => {
-    loadOfflineRequests(1, searchInput.value, statusFilter.value);
-    });
-
-    loadOfflineRequests(currentPage);
-
-
-  </script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Offline Payment Requests</title>
-  <link rel="stylesheet" href="/staticfile/admin.css" />
-  <style>
-    .request-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-    }
-    .request-table th, .request-table td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    .request-table th {
-      background-color: #f0860d;
-      color: white;
-    }
-    .status-pending {
-      color: orange;
-    }
-    /* .action-btn {
-      padding: 4px 10px;
-      margin-right: 5px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .approve-btn {
-      background-color: #4caf50;
-      color: white;
-    }
-    .reject-btn {
-      background-color: #f44336;
-      color: white;
-    } */
+  <link rel="stylesheet" href="/staticfile/offline.css" />
+  <!-- <style>
+    
 
-    .action-btn {
-    padding: 4px 10px;
-    margin-right: 5px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    }
-    .approve-btn {
-    background-color: #4caf50;
-    color: white;
-    }
-    .reject-btn {
-    background-color: #f44336;
-    color: white;
-    }
 
-  </style>
+  </style> -->
 </head>
 <body>
   <section class="container">
+    <header>
+        <!-- Existing header content -->
+        <button class="home-btn" id="back-to-users-btn">
+            <i class="fas fa-arrow-left"></i> Back to Users
+        </button>
+    </header>
+
     <h2>Offline Payment Requests</h2>
 
-    <div class="filters">
+    <div class="filter-bar">
       <input type="text" id="searchInput" placeholder="Search by email..." />
       <select id="statusFilter">
-        <option value="">All</option>
+        <option value="all">Select status</option>
         <option value="pending">Pending</option>
         <option value="approved">Approved</option>
         <option value="rejected">Rejected</option>
       </select>
     </div>
 
+
+    
     <table class="request-table">
       <thead>
         <tr>
           <th>Email</th>
+          <th>Mobile</th>
           <th>Amount</th>
           <th>Plan</th>
           <th>Status</th>
@@ -205,19 +46,89 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody id="requestsBody"></tbody>
+      <tbody id="requestsBody">
+        <!-- Rows will be injected dynamically like this example below: -->
+        <!--
+        <tr id="row-12345">
+          <td>user@example.com</td>
+          <td>₹1500</td>
+          <td>Weekly</td>
+          <td>pending</td>
+          <td>2025-08-03 12:45</td>
+          <td>
+            <button id="approve-12345" onclick="updateStatus('12345', 'approve')">Approve</button>
+            <button id="reject-12345" onclick="updateStatus('12345', 'reject')">Reject</button>
+          </td>
+        </tr>
+        -->
+      </tbody>
     </table>
 
+      <!-- Modal -->
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="modal">
+        <h3 id="modal-title">Confirmation</h3>
+        <p id="modal-message">Are you sure?</p>
+        <div class="modal-actions">
+          <button id="modal-ok-btn">OK</button>
+          <button id="modal-cancel-btn" class="hidden">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <div id="pagination"></div>
+
   </section>
 
-  <script>
+
+
+  
+
+<script>
+
+    document.getElementById("back-to-users-btn").addEventListener("click", () => {
+        window.location.href = "/users";
+    });
+
     const tbody = document.getElementById("requestsBody");
     const pagination = document.getElementById("pagination");
     const searchInput = document.getElementById("searchInput");
     const statusFilter = document.getElementById("statusFilter");
 
     let currentPage = 1;
+    let pendingAction = null;
+
+    const modalOverlay = document.getElementById('modal-overlay');
+    const msgBox = document.getElementById('modal-message');
+    const titleBox = document.getElementById('modal-title');
+    const okBtn = document.getElementById('modal-ok-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+
+    async function showModal(message, callback = null, showConfirm = false, title = "Notice") {
+      titleBox.textContent = title;
+      msgBox.textContent = message;
+      modalOverlay.style.display = 'flex';
+
+      if (showConfirm) {
+        cancelBtn.classList.remove('hidden');
+        okBtn.textContent = "Yes";
+        okBtn.onclick = () => {
+          modalOverlay.style.display = 'none';
+          callback && callback();
+        };
+        cancelBtn.onclick = () => {
+          modalOverlay.style.display = 'none';
+        };
+      } else {
+        cancelBtn.classList.add('hidden');
+        okBtn.textContent = "OK";
+        okBtn.onclick = () => {
+          modalOverlay.style.display = 'none';
+        };
+      }
+    }
+
 
     async function loadOfflineRequests(page = 1, search = "", status = "") {
       const res = await fetch(`/api/offline-requests?page=${page}&search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}`, {
@@ -234,22 +145,24 @@
 
       data.requests.forEach(req => {
         const row = document.createElement("tr");
+        row.id = `row-${req.user_id}`;
+
         row.innerHTML = `
           <td>${req.email}</td>
+          <td>${req.mobile}</td>
           <td>₹${req.amount}</td>
           <td>${req.plan}</td>
           <td class="${req.status === 'pending' ? 'status-pending' : ''}">${req.status}</td>
           <td>${req.requestedAt}</td>
           <td>
             ${req.status === 'pending' ? `
-              <button class="action-btn approve-btn" onclick="updateStatus('${req.user_id}', 'approved')">Approve</button>
-              <button class="action-btn reject-btn" onclick="updateStatus('${req.user_id}', 'rejected')">Reject</button>
+              <button id="approve-${req.user_id}" class="action-btn approve-btn" onclick="prepareAction('${req.user_id}', 'approve')">Approve</button>
+              <button id="reject-${req.user_id}" class="action-btn reject-btn" onclick="prepareAction('${req.user_id}', 'reject')">Reject</button>
             ` : req.status.charAt(0).toUpperCase() + req.status.slice(1)}
           </td>
         `;
         tbody.appendChild(row);
       });
-
       renderPagination(data.page, data.total_pages);
     }
 
@@ -267,61 +180,84 @@
       }
     }
 
-    async function updateStatus(id, status) {
-        const action = status === 'approve' ? 'approve' : 'reject';
-        const confirmMsg = `Are you sure you want to ${action} this request?`;
-        if (!confirm(confirmMsg)) return;
-
-        const res = await fetch('/admin/offline-request/update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ user_id: id, action })
-        });
-
-        const result = await res.json();
-
-        if (result.success === true) {
-            alert(result.message || `Request ${action}d successfully.`);
-            loadOfflineRequests(currentPage, searchInput.value, statusFilter.value);
-        } else {
-            alert(`Failed to ${action} request: ${result.detail || 'Unknown error'}`);
-        }
+    function prepareAction(userId, action) {
+      const confirmMsg = `Are you sure you want to ${action} this request?`;
+      showModal(confirmMsg, () => updateStatus(userId, action), true);
     }
 
+    async function updateStatus(id, action) {
+      const approveBtn = document.querySelector(`#approve-${id}`);
+      const rejectBtn = document.querySelector(`#reject-${id}`);
+      const row = document.querySelector(`#row-${id}`);
 
+      const button = action === "approve" ? approveBtn : rejectBtn;
 
+      if (approveBtn) approveBtn.disabled = true;
+      if (rejectBtn) rejectBtn.disabled = true;
 
+      if (button) {
+        button.innerHTML = `${action.charAt(0).toUpperCase() + action.slice(1)}ing <span class="spinner"></span>`;
+      }
 
-    // async function updateStatus(id, status) {
-    //   const confirmMsg = `Are you sure you want to ${status} this request?`;
-    //   if (!confirm(confirmMsg)) return;
+      const res = await fetch('/admin/offline-request/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ user_id: id, action })
+      });
 
-    //   const res = await fetch('/admin/offline-request/update', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     credentials: 'include',
-    //     body: JSON.stringify({ id, status })
-    //   });
+      const result = await res.json();
 
-    //   const result = await res.json();
-    //   if (result.status === 'success') {
-    //     alert(`Request ${status} successfully.`);
-    //     loadOfflineRequests(currentPage, searchInput.value, statusFilter.value);
-    //   } else {
-    //     alert(`Failed to ${status} request: ${result.detail || 'Unknown error'}`);
-    //   }
-    // }
+      if (result.success === true) {
+        showModal(result.message || `Request ${action}d successfully.`);
+        // if (row) {
+        //   row.style.transition = "opacity 0.4s ease, transform 0.3s ease";
+        //   row.style.opacity = 0;
+        //   row.style.transform = "translateX(50px)";
+        //   setTimeout(() => row.remove(), 400);
+        // }
+        if (row) {
+          const statusCell = row.children[4]; // 5th column is status
+          const actionCell = row.children[6]; // 7th column is actions
+
+          // Update status text and class
+          statusCell.textContent = action === 'approve' ? 'approved' : 'rejected';
+          statusCell.className = action === 'approve' ? 'status-approved' : 'status-rejected';
+
+          // Replace action buttons with static status text
+          actionCell.innerHTML = action.charAt(0).toUpperCase() + action.slice(1);
+        }
+      } else {
+        showModal(`Failed to ${action} request: ${result.detail || 'Unknown error'}`);
+        if (approveBtn) {
+          approveBtn.disabled = false;
+          approveBtn.innerHTML = "Approve";
+        }
+        if (rejectBtn) {
+          rejectBtn.disabled = false;
+          rejectBtn.innerHTML = "Reject";
+        }
+      }
+    }
 
     searchInput.addEventListener("input", () => {
-      loadOfflineRequests(1, searchInput.value, statusFilter.value);
+      const statusValue = statusFilter.value === "all" ? "" : statusFilter.value;
+      loadOfflineRequests(1, searchInput.value, statusValue);
+
     });
 
     statusFilter.addEventListener("change", () => {
-      loadOfflineRequests(1, searchInput.value, statusFilter.value);
+      const statusValue = statusFilter.value === "all" ? "" : statusFilter.value;
+      loadOfflineRequests(1, searchInput.value, statusValue);
     });
 
-    loadOfflineRequests(currentPage);
+    btn.addEventListener("click", () => {
+      const statusValue = statusFilter.value === "all" ? "" : statusFilter.value;
+      currentPage = i;
+      loadOfflineRequests(currentPage, searchInput.value, statusValue);
+    });
   </script>
+
+
 </body>
 </html>
