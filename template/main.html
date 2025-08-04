@@ -19,49 +19,75 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="/staticfile/main.css" />
 
-    <!-- External JS -->
-    <script src="/design/main.js" defer></script>
-
-    <!-- SMTP -->
-     <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <!-- <script src="/design/auth.js"></script> -->
 
     <title>SIGNIN & SIGNUP | The Gym</title>
   </head>
+  
   <body>
+    <div id="snackbar">
+      <span class="snackbar-icon" id="snackbar-icon"></span>
+      <span id="snackbar-message"></span>
+    </div>
+    
     <div id="container" class="container">
       <!-- FORM SECTION SIGNUP-->
       <div class="row">
         <div class="col align-items-center flex-col sign-up">
-          <div id="snackbar">
+          <!-- <div id="snackbar">
             <span class="snackbar-icon"></span>
             <span id="snackbar-message">Error message here</span>
-          </div>
+          </div> -->
           <div class="form-wrapper align-items-center">
             <div class="form sign-up">
+               <!-- Username -->
               <div class="input-group">
-                <i class="bx bxs-user"></i>
-                <input id="signupUsername" type="text" placeholder="Username" />
-              </div>
-              <div class="input-group">
-                <i class="bx bx-mail-send"></i>
-                <input id="signupEmail" type="email" placeholder="xyz@gmail.com" />
-              </div>
-              <div class="input-group">
-                <i class="bx bx-mobile"></i>
-                <input id="signupMobile" type="number" placeholder="+91-9876543210" />
-              </div>
-              <div class="input-group">
-                <i class="bx bx-user"></i>
-                <input list="gender-options" type="text" id="gender" placeholder="Male/Female/Others" />
-                <datalist id="gender-options">
-                  <option value="Male">
-                  <option value="Female">
-                  <option value="Others">
-                </datalist>
+                <i class="bx bxs-user icon"></i>
+                <input id="signupUsername" type="text" placeholder="Username" required />
               </div>
 
-              <button id="signupBtn">Sign up</button>
-              <p>
+              <!-- Email -->
+              <div class="input-group">
+                <i class="bx bx-mail-send icon"></i>
+                <input id="signupEmail" type="email" placeholder="Enter your email" required 
+                pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"/>
+              </div>
+
+              <!-- Mobile -->
+              <div class="input-group">
+                <i class="bx bx-mobile icon"></i>
+                <input id="signupMobile" type="tel" placeholder="Enter you mobile number" pattern="[0-9]{10}" required />
+              </div>
+
+              <!-- Password -->
+              <div class="input-group">
+                <i class="bx bx-lock icon"></i>
+                <input id="signupPassword" type="password" placeholder="New Password" required />
+                <i class="bx bx-show toggle-password" toggle="#signupPassword"></i>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="input-group">
+                <i class="bx bx-lock icon"></i>
+                <input id="signupConfirmPassword" type="password" placeholder="Confirm Password" required />
+                <i class="bx bx-show toggle-password" toggle="#signupConfirmPassword"></i>
+              </div>
+
+
+
+            <!-- Gender -->
+            <div class="input-group">
+              <i class="bx bx-user icon"></i>
+              <input list="gender-options" id="gender" name="gender" placeholder="Select Gender" required />
+              <datalist id="gender-options">
+                <option value="Male">
+                <option value="Female">
+                <option value="Others">
+              </datalist>
+            </div>
+
+              <button id="signupBtn" >Sign up</button>
+              <p class="mobile-toggle-text">
                 <span>Already have an account?</span>
                 <b onclick="toggle()" class="pointer">Sign in here</b>
               </p>
@@ -72,29 +98,54 @@
 
         <!-- SIGN IN -->
         <div class="col align-items-center flex-col sign-in">
+          <!-- <div id="snackbar">
+            <span class="snackbar-icon"></span>
+            <span id="snackbar-message">Error message here</span>
+            </div> -->
           <div class="form-wrapper align-items-center">
             <div class="form sign-in">
-              <div class="input-group">
-                <i class="bx bxs-mobile"></i>
-                <input type="text" placeholder="mobile" />
+              <!-- ✅ Correct Signin Inputs -->
+              <div class="input-group" icon>
+                <i class="bx bx-mobile icon"></i>
+                <input id="signinMobile" type="tel" placeholder="Enter your mobile number" required />
               </div>
+
+              <!-- Password -->
               <div class="input-group">
-                <i class="bx bxs-lock-alt"></i>
-                <input type="captcha" placeholder="Enter captcha" />
+                <i class='bx bxs-lock-alt icon'></i>
+                <input type="password" id="signinPassword" placeholder="Enter your Password" />
+                <i class='bx bx-show toggle-password' toggle="#signinPassword"></i>
               </div>
-              <div id="captcha"></div>
-              <input type="text" id="generateCaptchaBtn" value="Refresh CAPTCHA" readonly style="cursor:pointer;" />
-              <input type="text" id="captchaInput" placeholder="" autocomplete="off" required />
-              <br/>
-              <button type="submit" id="sendOtpBtn">Submit</button>
-              <!-- <button id="sendOtpBtn">Send OTP</button> -->
-              <button id="signinBtn" style="display: none;">Sign in</button>
-              <!-- <p><b>Forgot password?</b></p> -->
+
+
+              <div class="input-group">
+                <i class="bx bxs-lock-alt icon"></i>
+                <input type="text"  id="captchaValue" placeholder="Enter CAPTCHA" />
+              </div>
+
+              <!-- Captcha input (readonly) -->
+              <input type="text" id="captchaInput" readonly style="font-weight:bold; letter-spacing:2px;" />
+
+              <!-- Generate captcha button -->
+              <button id="generateCaptchaBtn" type="button" style="margin-top:5px;">Refresh CAPTCHA</button>
+
+              <!-- Signin submit -->
+               <!-- <a href="> -->
+              <button id="signinBtn" type="button">Sign in</button>
+              <!-- </a> -->
+
               <p>
                 <span>Don't have an account?</span>
                 <b onclick="toggle()" class="pointer">Sign up here</b> <br>
-                <a href="/" id="back_home" style="text-decoration: none; font-weight: 500; position: relative; padding: 10px; ">Back to Home</a>
+                <a href="/" id="back_home" style="text-decoration: none; font-weight: 500; position: relative; padding: 10px; ">Back to Home</a> <br>
+                <a href="/forgot-password" id="forgot-password">Forgot Password?</a>
               </p>
+
+              <!-- Forgot Password Link -->
+              <!-- <p>
+                <a href="/forgot-password" id="forgot-password">Forgot Password?</a>
+              </p> -->
+
             </div>
           </div>
         </div>
@@ -122,6 +173,13 @@
       </div>
       <!-- END CONTENT SECTION -->
     </div>
+
+     <!-- External JS -->
+    <script src="/design/main.js"></script>
+
+    <!-- SMTP -->
+    <script type="module" src="https://smtpjs.com/v3/smtp.js"></script>
+
   </body>
 </html>
 

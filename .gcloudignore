@@ -1,0 +1,16 @@
+# Ignore node_modules or large libraries
+node_modules/
+.vscode/
+__pycache__/
+*.log
+*.tmp
+*.bak
+*.pyc
+.DS_Store
+.idea/
+.env
+.gcloudignore
+tests/
+readme.md
+assets/raw/
+assets/highres/

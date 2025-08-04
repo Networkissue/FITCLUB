@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/staticfile/profile.css">
+    <title>User Profile - The Gym by Johnson</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="snackbar" class="snackbar"></div>
+    <div class="profile-container">
+        <!-- Header -->
+        <header class="profile-header">
+            <div class="header-content">
+                <div class="gym-logo">
+                    <!-- Gym logo can be added here -->
+                </div>
+                <nav class="header-nav">
+                    <a href="/" class="nav-btn" id="home-id">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <button class="nav-btn active" data-tab="profile">
+                        <i class="fas fa-user"></i> Profile
+                    </button>
+                    <button class="nav-btn" data-tab="membership">
+                        <i class="fas fa-id-card"></i> Membership
+                    </button>
+                    <button class="nav-btn" data-tab="payments">
+                        <i class="fas fa-credit-card"></i> Payments
+                    </button>
+                    <button class="logout-btn" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                    <!-- <a href="#" class="logout-btn" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a> -->
+
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="profile-main">
+            <!-- Profile Tab -->
+            <div id="profile-tab" class="tab-content active">
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-user-circle"></i> Personal Information</h2>
+                        <button type="button" class="edit-btn" onclick="toggleEdit()" id="edit-profile">
+                            <i class="fas fa-edit" ></i> Edit Profile
+                        </button>
+                    </div>
+                    
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        
+                        <form id="profile-form" class="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="name">Full Name</label>
+                                    <input type="text" id="name" name="name" value="{{ user.name }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" id="username" value="{{ user.username }}" readonly disabled> 
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" value="{{ user.email }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mobile">Phone Number</label>
+                                    <input type="tel" id="mobile" name="mobile" value="{{ user.mobile }}" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="gender">Gender</label>
+                                    <select id="gender" name="gender" disabled >
+                                        <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                                        <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                                        <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                                <!-- <div class="form-group">
+                                    <label for="joining_date">Joining Date</label>
+                                    <input type="date" id="joining_date" value="{{ user.joining_date }}" readonly disabled>
+                                </div> -->
+                            </div>
+                            
+                            <div class="form-actions" style="display: none;">
+                                <button type="submit" class="save-btn">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button type="button" class="cancel-btn" onclick="cancelEdit()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Membership Tab -->
+            <div id="membership-tab" class="tab-content">
+                <div class="membership-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-id-card"></i> Membership Details</h2>
+                    </div>
+                    
+                    <div class="membership-card">
+                        <div class="membership-info" id="membership-info">
+                            <div class="info-item" id="info-id">
+                                <span class="info-label">Member ID:</span>
+                                <span class="info-value">{{ user.id }}</span>
+                            </div>
+                            <div class="info-item" id="info-name">
+                                <span class="info-label">Member Name:</span>
+                                <span class="info-value">{{ user.name }}</span>
+                            </div>
+                            <div class="info-item" id="info-date">
+                                <span class="info-label">Joining Date:</span>
+                                <span class="info-value" id="joining_date">{{ user.joining_date }}</span>
+                            </div>
+                            <div class="info-item" id="info-type">
+                                <span class="info-label">Membership Type:</span>
+                                <span class="info-value membership-type">Premium</span>
+                            </div>
+                            <div class="info-item" id="info-status">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value status-badge 
+                                    {% if payment_status == 'active' %}status-active
+                                    {% elif payment_status == 'due_soon' %}status-warning
+                                    {% else %}status-overdue{% endif %}">
+                                    {% if payment_status == 'active' %}Active
+                                    {% elif payment_status == 'due_soon' %}Due Soon
+                                    {% else %}Overdue{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Tab -->
+            <div id="payments-tab" class="tab-content">
+                <div class="payments-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-credit-card"></i> Payment Information</h2>
+                        <button class="edit-btn" onclick="togglePaymentEdit()" id="edit-payment" style="display: none;">
+                            <i class="fas fa-plus"></i> Update Payment
+                        </button>
+                    </div>
+                    
+                    <div class="payment-status-card">
+                        <div class="payment-status" id="payment-status">
+                            <div class="status-icon 
+                                {% if payment_status == 'active' %}status-active
+                                {% elif payment_status == 'due_soon' %}status-warning
+                                {% else %}status-overdue{% endif %}">
+                                <i class="fas fa-
+                                    {% if payment_status == 'active' %}check-circle
+                                    {% elif payment_status == 'due_soon' %}exclamation-triangle
+                                    {% else %}times-circle{% endif %}"></i>
+                            </div>
+                            <div class="status-info">
+                                <h3>Payment Status</h3>
+                                <p class="status-text">
+                                    {% if payment_status == 'active' %}
+                                        Your membership is active and up to date.
+                                    {% elif payment_status == 'due_soon' %}
+                                        Payment due in {{ days_until_due }} days.
+                                    {% else %}
+                                        Payment is {{ days_until_due|abs }} days overdue.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-details">
+                        <div class="payment-info" id="payment-info">
+                            <div class="info-item">
+                                <span class="info-label">Last Payment Date:</span>
+                                <span class="info-value">{{ user.last_payment_date }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Next Due Date:</span>
+                                <span class="info-value" id="next-due-date">{{ user.next_due_date }}</span>
+                            </div>
+
+                            <div class="info-item" style="display: none;">
+                                <span class="info-label">Payment Cycle:</span>
+                                <span class="info-value">{{ payment_cycle }}</span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <form id="payment-form" class="payment-form" style="display: none;">
+                            <div class="form-group">
+                                <label for="payment_date">Payment Date</label>
+                                <input type="date" id="payment_date" name="payment_date" required>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="save-btn">
+                                    <i class="fas fa-save"></i> Update Payment
+                                </button>
+                                <button type="button" class="cancel-btn" onclick="cancelPaymentEdit()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="success-message" class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <span id="success-text">Success!</span>
+    </div>
+
+    <!-- Error Message -->
+    <div id="error-message" class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="error-text">Error occurred!</span>
+    </div>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 🔐 Verify session before allowing access
+            try {
+                const authRes = await fetch("/verify-token", {
+                    credentials: 'include'
+                });
+        
+                if (authRes.status === 401 || !authRes.ok) {
+                    window.location.href = "/signin";
+                    return;
+                }
+            } catch (err) {
+                console.error("Token verification failed:", err);
+                window.location.href = "/signin";
+                return;
+            }
+        
+            // 🔒 Admin-specific field hiding
+            if (sessionStorage.getItem("Role") === "admin") {
+                ["info-status", "info-type", "info-date"].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = "none";
+                });
+            }
+        
+            // ✅ Setup event listeners
+            const homeBtn = document.getElementById('home-btn');
+            if (homeBtn) {
+                homeBtn.addEventListener('click', () => window.location.href = '/');
+            }
+        
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    sessionStorage.clear();
+                    window.location.href = '/logout';
+                });
+            }
+        
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const targetTab = this.dataset.tab;
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(tab => tab.classList.remove('active'));
+        
+                    this.classList.add('active');
+                    document.getElementById(`${targetTab}-tab`).classList.add('active');
+                });
+            });
+        
+            // 🧠 Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'e') {
+                    e.preventDefault();
+                    if (document.querySelector('.tab-content.active')?.id === 'profile-tab') toggleEdit();
+                }
+                if (e.key === 'Escape') {
+                    if (isEditing) cancelEdit();
+                    if (isPaymentEditing) cancelPaymentEdit();
+                }
+            });
+        
+            // 🔠 Input validation
+            document.addEventListener('input', (e) => {
+                if (e.target.type === 'email') {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    e.target.setCustomValidity(emailRegex.test(e.target.value) ? '' : 'Please enter a valid email address');
+                }
+                if (e.target.type === 'tel') {
+                    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+                    e.target.setCustomValidity(phoneRegex.test(e.target.value) ? '' : 'Please enter a valid phone number');
+                }
+            });
+
+            const editBtn = document.querySelector('.edit-btn');
+            if (editBtn) {
+                editBtn.addEventListener('click', () => {
+                    if (!isEditing) toggleEdit();
+                    if (!isPaymentEditing) togglePaymentEdit();
+                });
+            }
+
+            const cancelBtn = document.querySelector('.cancel-btn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    if (isEditing) cancelEdit();
+                    if (isPaymentEditing) cancelPaymentEdit();
+                });
+            }
+
+        
+            setupProfileForm();
+            setupPaymentForm();
+        
+            fetchUserData();
+            setInterval(() => {
+                if (!isEditing && !isPaymentEditing) fetchUserData();
+            }, 30000);
+        
+            // 🔽 All functions below
+            let isEditing = false;
+            let originalFormData = {};
+            let isPaymentEditing = false;
+        
+            function toggleEdit() {
+                const form = document.getElementById('profile-form');
+                const inputs = form.querySelectorAll('input, select');
+                const actions = form.querySelector('.form-actions');
+                const editBtn = document.querySelector('.edit-btn');
+                const userRole = sessionStorage.getItem("Role") || "user";
+        
+                originalFormData = {};
+                inputs.forEach(input => {
+                    originalFormData[input.name] = input.value;
+                    if (userRole === "user" && input.name === "joining_date") {
+                        input.setAttribute("readonly", "readonly");
+                        input.setAttribute("disabled", "disabled");
+                    } else {
+                        input.removeAttribute("readonly");
+                        input.removeAttribute("disabled");
+                    }
+                });
+        
+                actions.style.display = 'flex';
+                editBtn.style.display = 'none';
+                isEditing = true;
+            }
+        
+            function cancelEdit() {
+                const form = document.getElementById('profile-form');
+                const inputs = form.querySelectorAll('input, select');
+                const actions = form.querySelector('.form-actions');
+                const editBtn = document.querySelector('.edit-btn');
+        
+                inputs.forEach(input => {
+                    input.value = originalFormData[input.name] || '';
+                    input.setAttribute('readonly', 'readonly');
+                    if (input.tagName === 'SELECT') {
+                        input.setAttribute('disabled', 'disabled');
+                    }
+                });
+        
+                actions.style.display = 'none';
+                editBtn.style.display = 'block';
+                isEditing = false;
+            }
+
+            function cancelPaymentEdit() {
+                const form = document.getElementById('payment-form');
+                const editBtn = document.querySelector('.payments-section .edit-btn');
+
+                if (form) form.style.display = 'none';
+                if (editBtn) editBtn.style.display = 'block';
+                isPaymentEditing = false;
+            }
+
+
+        
+            function setupProfileForm() {
+                const form = document.getElementById('profile-form');
+                if (!form) return;
+        
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    showLoading();
+                    try {
+                        const response = await fetch('/api/update-profile', {
+                            method: 'POST',
+                            body: formData,
+                            credentials: 'include'
+                        });
+        
+                        const data = await response.json();
+                        hideLoading();
+        
+                        if (data.status === 'success') {
+                            showSuccess(data.message);
+                            form.querySelectorAll('input, select').forEach(input => {
+                                input.setAttribute('readonly', 'readonly');
+                                if (input.tagName === 'SELECT') input.setAttribute('disabled', 'disabled');
+                            });
+                            form.querySelector('.form-actions').style.display = 'none';
+                            document.querySelector('.edit-btn').style.display = 'block';
+                            isEditing = false;
+                        } else {
+                            showError(data.message || 'Failed to update profile');
+                        }
+                    } catch (err) {
+                        hideLoading();
+                        showError('Network error occurred');
+                    }
+                });
+            }
+        
+            function setupPaymentForm() {
+                const form = document.getElementById('payment-form');
+                const editBtn = document.querySelector('.payments-section .edit-btn');
+                if (!form || !editBtn) return;
+        
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    showLoading();
+                    try {
+                        const response = await fetch('/api/update-payment', {
+                            method: 'POST',
+                            body: formData,
+                            credentials: 'include'
+                        });
+        
+                        const data = await response.json();
+                        hideLoading();
+        
+                        if (data.status === 'success') {
+                            showSuccess(data.message);
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            showError(data.message || 'Failed to update payment');
+                        }
+                    } catch (err) {
+                        hideLoading();
+                        showError('Network error occurred');
+                    }
+                });
+        
+                editBtn.addEventListener('click', () => {
+                    form.style.display = 'block';
+                    editBtn.style.display = 'none';
+                    isPaymentEditing = true;
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('payment_date').value = today;
+                });
+            }
+        
+            async function fetchUserData() {
+                try {
+                    const res = await fetch('/api/user-data', { credentials: 'include' });
+                    if (!res.ok) throw new Error('Unauthorized');
+        
+                    const { user = {}, payment_info = {} } = await res.json();
+                    const role = sessionStorage.getItem("Role") || "user";
+        
+                    ['name', 'username', 'email', 'mobile', 'gender', 'joining_date'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = user[id] || '';
+                    });
+        
+                    document.getElementById('payment-status').textContent = payment_info.status || '-';
+                    document.getElementById('next-due-date').textContent = payment_info.next_due_date || '-';
+        
+                    if (role === 'user') {
+                        document.getElementById("edit-payment")?.style.setProperty("display", "none");
+                        document.getElementById("payment-form")?.style.setProperty("display", "none");
+                        document.getElementById("joining_date")?.setAttribute("readonly", "readonly");
+                        document.getElementById("joining_date")?.setAttribute("disabled", "disabled");
+                    }
+                } catch (err) {
+                    console.error("❌ Error fetching user data:", err);
+                    showError('Session expired. Please login again.');
+                    window.location.href = '/signin';
+                }
+            }
+        
+            function showLoading() {
+                document.getElementById('loading-overlay').style.display = 'flex';
+            }
+        
+            function hideLoading() {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        
+            function capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+        
+            function showSnackbar(message, type = "success") {
+                const snackbar = document.getElementById("snackbar");
+                snackbar.className = "snackbar show " + type;
+                snackbar.textContent = capitalize(message);
+                setTimeout(() => {
+                    snackbar.className = "snackbar";
+                }, 3000);
+            }
+        
+            function showSuccess(message) {
+                showSnackbar(message, "success");
+            }
+        
+            function showError(message) {
+                showSnackbar(message, "error");
+            }
+        });
+    </script>
+        
+
+</body>
+</html>

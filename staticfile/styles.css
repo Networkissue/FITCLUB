@@ -537,217 +537,169 @@ nav {
   color: var(--accent-color);
 }
 
+/* Base Footer Layout */
+.footer {
+  background-color: var(--black);
+  color: var(--text-light);
+  position: relative;
+  z-index: 1;
+  padding-top: 4rem;
+}
 
 .footer__container {
-  position: relative;
   display: grid;
-  grid-template-columns: 400px repeat(3, 1fr);
-  gap: 8rem;
+  grid-template-columns: 400px repeat(2, 1fr);
+  gap: 4rem;
+  max-width: var(--max-width);
+  margin: auto;
+  padding: 0 2rem 4rem;
 }
 
-.footer__blur {
-  bottom: 0;
-  right: 0;
-}
-
-.footer__logo {
-  max-width: 150px;
-  margin-bottom: 2rem;
-}
-/* change */
-/* .footer__col p {
-  margin-top: 0rem;
-  margin-bottom: -2rem;
-  color: var(--text-light);
-} */
-
-/* Footer Column Flex Layout */
+/* Footer Columns */
 .footer__col {
-  display: block;
-  flex-direction: column;  
-  justify-content: flex-start;
-  align-items: flex-start;
-  color: var(--text-light);
-  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 
+.footer__logo img {
+  width: 80px;
+  margin-bottom: 1rem;
+}
 
-/* Socials section inside footer */
+.footer__col p {
+  font-size: 0.95rem;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.footer__col h4 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.2rem;
+  color: var(--white);
+}
+
+.footer__col a {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: var(--text-light);
+  text-decoration: none;
+  gap: 10px;
+  transition: 0.3s ease;
+}
+
+.footer__col a i {
+  color: var(--primary-color);
+}
+
+.footer__col a:hover {
+  color: var(--primary-color);
+}
+
+/* Social Icons */
 .footer__socials {
   display: flex;
-  padding: 90px 0px;
-  align-items: center;
   gap: 1rem;
+  margin-top: 1rem;
 }
 
 .footer__socials a {
-  padding: 5px 10px;
-  font-size: 1.25rem;
-  color: var(--secondary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   border: 1px solid var(--secondary-color);
-  border-radius: 100%;
+  border-radius: 50%;
+  color: var(--secondary-color);
   transition: 0.3s;
 }
 
 .footer__socials a:hover {
-  color: var(--white);
   background-color: var(--secondary-color);
+  color: var(--black);
 }
 
-/* Adjusting the spacing for .footer__col h4 to make it more reasonable */
-.footer__col h4 {
-  margin-top: 2rem; /* Reduced the margin-top to 2rem */
-  transform: translateX(-13%);
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--white);
-  padding: 20px;
-}
-
-.footer__col > a {
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-  color: var(--text-light);
-  text-decoration: none;
-  gap: 10px; /* Adds space between the icon and the text */
-  padding: 5px;
-}
-
-.footer__col > a:hover {
-  color: var(--secondary-color);
-}
-
+/* Footer Bar */
 .footer__bar {
-  position: relative;
-  max-width: var(--max-width);
-  opacity: 20%;
-  margin: auto;
-  top: -10rem;
-  padding-left: 10rem;
-  font-size: 0.8rem;
-  color: var(--white);
-  /* color: #a09a9a; */
-  left: 20%;
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 1.5rem 1rem 2rem;
+  color: #888;
 }
 
-@media (width < 900px) {
-  .nav__links {
-    display: none;
-  }
+/* Background Blur Effects */
+.bg__blur,
+.footer__blur {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+}
 
-  .header__container {
-    grid-template-columns: repeat(1, 1fr);
-  }
+.bg__blur {
+  width: 200px;
+  height: 200px;
+  background: #f0860d33;
+  top: -40px;
+  left: -40px;
+}
 
-  .header__image {
-    grid-area: 1/1/2/2;
-  }
+.footer__blur {
+  width: 250px;
+  height: 250px;
+  background: #f0860d22;
+  bottom: -60px;
+  right: -60px;
+}
 
-  .explore__grid {
+/* Media Queries */
+@media (max-width: 1024px) {
+  .footer__container {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .class__container {
-    grid-template-columns: repeat(1, 1fr);
-  }
-
-  .class__image {
-    min-height: 500px;
-  }
-
-  .price__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .review__container {
     gap: 2rem;
-  }
-
-  .footer__container {
-    grid-template-columns: 1fr 200px;
+    text-align: left;
   }
 }
 
-@media (width < 600px) {
-  .explore__header {
-    flex-direction: column;
-  }
-
-  .explore__grid {
-    grid-template-columns: repeat(1, 1fr);
-  }
-
-  .join__container {
-    margin-bottom: 15rem;
-  }
-
-  .join__grid {
-    width: 100%;
-    margin: 0;
-    bottom: -20rem;
-  }
-
-  .price__grid {
-    grid-template-columns: repeat(1, 1fr);
-  }
-
-  .review__container {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .review__footer {
-    flex-direction: column;
-  }
-
+@media (max-width: 768px) {
   .footer__container {
-    grid-template-columns: 1fr 150px;
-  }
-
-  .footer__bar {
-    text-align: center;
+    grid-template-columns: 1fr;
+    text-align: left;
   }
 
   .footer__col {
-    flex: 1 1 200px;  /* Allow the columns to resize responsively */
+    padding: 1rem 0;
+  }
+
+  .footer__socials {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .footer__bar {
+    font-size: 0.75rem;
     padding: 1rem;
   }
 }
 
-/* Media queries for responsiveness */
-@media (width < 900px) {
+@media (max-width: 480px) {
   .footer__container {
-    grid-template-columns: 1fr 200px;  /* Adjusting the grid layout for smaller screens */
-  }
-}
-
-@media (width < 600px) {
-  .footer__container {
-    grid-template-columns: 1fr 150px;  /* Further adjustment for mobile screens */
+    padding: 0 1rem 2rem;
   }
 
-  .footer__bar {
-    text-align: center;
+  .footer__col h4 {
+    font-size: 1rem;
   }
 
-  .footer__col {
-    flex: 1 1 200px;  /* Allow the columns to resize responsively */
-    padding: 1rem;
+  .footer__col a {
+    font-size: 0.85rem;
+  }
+
+  .footer__socials a {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
   }
 }
-
-#enquiry {
-  position: absolute;  /* Position relative to its normal place */
-  transform: translateX(1000%); /* Moves the element up by 30% of its own height */
-}
-
-#enquiry-link {
-  position: absolute;  /* Position relative to its normal place */
-  /* transform: translateY(); */
-  /* transform: translateX();  */
-  transform: translate(223%, 270%);
-  
-}
-

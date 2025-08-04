@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - User List</title>
+    <link rel="stylesheet" href="/staticfile/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+
+        html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+        .home-btn {
+        padding: 10px 20px;
+        background-color: #f0860d;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        outline: none;
+        box-shadow: none;
+        }
+
+        .home-btn:hover {
+            background: #de7c0c;
+            transform: translateY(-2px);
+        }
+
+        .status-active {
+            color: green;
+            font-weight: bold;
+        }
+        .status-warning {
+            color: orange;
+            font-weight: bold;
+        }
+        .status-overdue {
+            color: red;
+            font-weight: bold;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at bottom right, #111317);
+            color: #ffffff;
+            padding: 40px 20px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+        }
+
+
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .membership-card {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        .membership-card table {
+            min-width: 900px; /* ensures table doesn't shrink too much */
+            width: 100%;
+        }
+
+
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        }
+
+        thead {
+        background-color: #1f2937;
+        color: white;
+        }
+
+        th, td {
+        padding: 12px 16px;
+        text-align: left;
+        }
+
+        tbody tr:nth-child(even) {
+        background-color: #f9fafb;
+        /* color: #1f2937; */
+        }
+
+        tbody tr:hover {
+        background-color: #e5e7eb84;
+        }
+
+        @media (max-width: 768px) {
+
+        .status-active::before {
+        display: none;
+
+        }
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tr {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        td {
+            position: relative;
+            padding-left: 50%;
+            border-bottom: 1px solid #eee;
+        }
+
+        td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 16px;
+            font-weight: bold;
+            color: #111827;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .status-active::before {
+                display: none;
+
+            }
+            .membership-card {
+                padding: 0 10px;
+            }
+
+            table, thead, tbody, th, td, tr {
+                display: block;
+                width: 100%;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                background: #ffffff;
+                margin-bottom: 15px;
+                border-radius: 8px;
+                padding: 10px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+
+            td {
+                position: relative;
+                padding-left: 50%;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #eee;
+                background: #f9f9f9;
+                font-size: 14px;
+                color: #111827;
+                box-sizing: border-box;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 12px;
+                top: 8px;
+                font-weight: 600;
+                font-size: 13px;
+                color: #111827;
+                white-space: nowrap;
+            }
+
+            .table-container {
+                padding: 0 10px;
+            }
+
+            .search-container input {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+
+            .section-header h2 {
+                font-size: 18px;
+            }
+
+            .home-btn,
+            .logout-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
+
+        @media (max-width: 820px) {
+            .status-active::before {
+                display: none;
+
+            }
+            .membership-card {
+                padding: 0 10px;
+            }
+
+            table, thead, tbody, th, td, tr {
+                display: block;
+                width: 100%;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                background: #ffffff;
+                margin-bottom: 15px;
+                border-radius: 8px;
+                padding: 10px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+
+            td {
+                position: relative;
+                padding-left: 50%;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #eee;
+                background: #f9f9f9;
+                font-size: 14px;
+                color: #111827;
+                box-sizing: border-box;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 12px;
+                top: 8px;
+                font-weight: 600;
+                font-size: 13px;
+                color: #111827;
+                white-space: nowrap;
+            }
+
+            .table-container {
+                padding: 0 10px;
+            }
+
+            .search-container input {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+
+            .section-header h2 {
+                font-size: 18px;
+            }
+
+            .home-btn,
+            .logout-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
+
+        @media (max-width: 480px) {
+        .status-active::before {
+            display: none;
+
+        }
+        table, thead, tbody, th, td, tr {
+            display: block;
+            width: 100%;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tr {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #ccc;
+            padding: 8px;
+            background: #fff;
+            border-radius: 8px;
+        }
+
+        td {
+            position: relative;
+            padding-left: 45%;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+            background: #f9f9f9;
+        }
+
+        td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 12px;
+            top: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .table-container {
+            padding: 0 10px;
+        }
+
+        .membership-card {
+            padding: 0 10px;
+        }
+
+        .search-container input {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+        }
+
+        .home-btn,
+        .logout-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 375px) {
+        .status-active::before {
+        display: none;
+
+        }
+        .membership-card {
+            padding: 0 10px;
+        }
+
+        table, thead, tbody, th, td, tr {
+            display: block;
+            width: 100%;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tr {
+            background: #ffffff;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        td {
+            position: relative;
+            padding-left: 50%;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            background: #f9f9f9;
+            font-size: 14px;
+            color: #111827;
+            box-sizing: border-box;
+        }
+
+        td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 12px;
+            top: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #111827;
+            white-space: nowrap;
+        }
+
+        .table-container {
+            padding: 0 10px;
+        }
+
+        .search-container input {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+        }
+
+        .home-btn,
+        .logout-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    }
+
+
+
+        td.status-active,
+        td.status-warning,
+        td.status-overdue {
+            background-color: transparent !important;
+            font-weight: bold;
+            padding: 6px 10px;
+            border-radius: 5px;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0;
+            top: 0%;
+        }
+
+        #search-input {
+            padding: 10px 16px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+            position: relative; /* Needed for top/left to work if used */
+            text-align: center;
+        }
+
+        #search-input:focus {
+            box-shadow: 0 0 5px rgba(31, 41, 55, 0.4);
+            border-color: #1f2937;
+        }
+
+        </style>
+</head>
+<body>
+    <div class="profile-container">
+        <header class="profile-header">
+            <div class="header-content">
+                <div class="gym-logo"></div>
+                <nav class="header-nav">
+                    <!-- <a href="/" class="nav-btn"><i class="fas fa-home"></i> Home</a> -->
+                    <button class="home-btn" id="offline-requests-btn">
+                        <i class="fas fa-file-alt"></i> Offline Requests
+                    </button>
+                    <button class="home-btn" id="home-btn">
+                        <i class="fas fa-home"></i> Home
+                    </button>
+                    <!-- <a href="/admin" class="nav-btn active"><i class="fas fa-users"></i> User List</a> -->
+                    <button class="logout-btn" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <main class="profile-main">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search" />
+            </div>
+
+            <!-- {% if request.query_params.get('email_sent') == 'true' %}
+            <div class="alert alert-success">
+                ✅ Emails successfully sent to all {{ status_filter }} users.
+            </div>
+            {% endif %} -->
+
+
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> All Users</h2>
+            </div>
+            <div class="membership-card">
+              <table id="user-table">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Mobile</th>
+                        <th>Gender</th>
+                        <th>Joining Date</th>
+                        <th>Last Payment</th>
+                        <th>Next Due</th>
+                        <th>Status</th>
+                        <th>Membership</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filled by JS -->
+                </tbody>
+              </table>
+
+              <div id="pagination-controls" style="text-align:center; margin-top: 20px;"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+                    <div>
+                        <label for="rows-per-page">Rows per page:</label>
+                        <select id="rows-per-page">
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                        </select>
+                    </div>
+
+                    <!-- <div>
+                        <input type="text" id="search-input" placeholder="Search by ID or username or status..." style="padding: 6px 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    </div> -->
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+
+        (async () => {
+            // 🔐 Verify session before allowing access
+            try {
+                const authRes = await fetch("/verify-token", {
+                    credentials: 'include'
+                });
+
+                if (authRes.status === 401 || !authRes.ok) {
+                    window.location.href = "/signin";
+                    return;
+                }
+            } catch (err) {
+                console.error("Token verification failed:", err);
+                window.location.href = "/signin";
+                return;
+            }
+
+            let currentPage = 1;
+            let limit = 5;
+            let searchQuery = "";
+
+            function loadUsers(page = 1) {
+                console.log("Loading users for page:", page); // debug
+
+                fetch(`/api/users?page=${page}&limit=${limit}&search=${encodeURIComponent(searchQuery)}`, {
+                    method: "GET",
+                    credentials: "include",
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Fetched data:", data); // debug
+
+                    const tbody = document.querySelector("#user-table tbody");
+                    if (!tbody) {
+                        console.error("Table body not found!");
+                        return;
+                    }
+
+                    tbody.innerHTML = "";
+
+                    data.users.forEach(user => {
+                        let statusIcon = "❓";
+                        if (user.status === "active") statusIcon = "✅";
+                        else if (user.status === "warning") statusIcon = "⚠️";
+                        else if (user.status === "overdue") statusIcon = "❌";
+
+                        const row = document.createElement("tr");
+                        // row.innerHTML = `
+                        //     <td>${user.id}</td>
+                        //     <td>${user.username}</td>
+                        //     <td>${user.mobile}</td>
+                        //     <td>${user.gender}</td>
+                        //     <td>${user.joining_date}</td>
+                        //     <td>${user.last_payment_date}</td>
+                        //     <td>${user.next_due_date}</td>
+                        //     <td class="status-${user.status}">${statusIcon} ${user.status}</td>
+                        //     <td>${user.membership || 'NA'}</td>
+                        // `;
+                        row.innerHTML = `
+                        <td data-label="User ID">${user.id}</td>
+                        <td data-label="Username">${user.username}</td>
+                        <td data-label="Mobile">${user.mobile}</td>
+                        <td data-label="Gender">${user.gender}</td>
+                        <td data-label="Joining Date">${user.joining_date}</td>
+                        <td data-label="Last Payment">${user.last_payment_date}</td>
+                        <td data-label="Next Due">${user.next_due_date}</td>
+                        <td data-label="Status" class="status-${user.status}">${statusIcon} ${user.status}</td>
+                        <td data-label="Membership">${user.membership || 'NA'}</td>
+                    `;
+
+                        tbody.appendChild(row);
+                    });
+
+                    renderPagination(data.page, data.total_pages);
+                })
+                .catch(err => {
+                    console.error("Fetch error:", err);
+                });
+            }
+
+            function renderPagination(current, total) {
+                const container = document.getElementById("pagination-controls");
+                container.innerHTML = "";
+
+                const prevBtn = document.createElement("button");
+                prevBtn.textContent = "Previous";
+                prevBtn.disabled = current === 1;
+                prevBtn.style.padding = "6px 12px";
+                prevBtn.addEventListener("click", () => {
+                    if (current > 1) {
+                        currentPage--;
+                        loadUsers(currentPage);
+                    }
+                });
+
+                const nextBtn = document.createElement("button");
+                nextBtn.textContent = "Next";
+                nextBtn.disabled = current === total;
+                nextBtn.style.padding = "6px 12px";
+                nextBtn.addEventListener("click", () => {
+                    if (current < total) {
+                        currentPage++;
+                        loadUsers(currentPage);
+                    }
+                });
+
+                container.appendChild(prevBtn);
+
+                for (let i = 1; i <= total; i++) {
+                    const btn = document.createElement("button");
+                    btn.textContent = i;
+                    btn.style.margin = "0 5px";
+                    btn.style.padding = "6px 10px";
+                    btn.style.borderRadius = "5px";
+                    btn.style.border = "none";
+                    btn.style.cursor = "pointer";
+                    btn.style.backgroundColor = i === current ? "#1f2937" : "#e5e7eb";
+                    btn.style.color = i === current ? "white" : "black";
+                    btn.addEventListener("click", () => {
+                        currentPage = i;
+                        loadUsers(currentPage);
+                    });
+                    container.appendChild(btn);
+                }
+
+                container.appendChild(nextBtn);
+            }
+
+            // offline request button
+            document.getElementById("offline-requests-btn").addEventListener("click", () => {
+                window.location.href = "/offline-requests";
+            });
+
+
+            // Setup event listeners
+            document.getElementById("rows-per-page").addEventListener("change", e => {
+                limit = parseInt(e.target.value);
+                currentPage = 1;
+                loadUsers(currentPage);
+            });
+
+            document.getElementById("search-input").addEventListener("input", e => {
+                searchQuery = e.target.value;
+                currentPage = 1;
+                loadUsers(currentPage);
+            });
+
+            // Initial fetch (moved outside DOMContentLoaded because it's already too late)
+            loadUsers(currentPage);
+
+
+            // Logout functionality
+            document.getElementById("logout-btn").addEventListener("click", () => {
+                fetch("/logout", {
+                    method: "GET",
+                    credentials: "include"
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = "/signin";
+                    } else {
+                        console.error("Logout failed:", response.statusText);
+                    }
+                })
+                .catch(err => {
+                    console.error("Logout error:", err);
+                });
+            });
+
+            // Home button functionality
+            document.getElementById("home-btn").addEventListener("click", () => {
+                window.location.href = "/";
+            });
+
+        })();
+
+        
+    </script>
+
+</body>
+</html>

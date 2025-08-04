@@ -7,16 +7,17 @@
       href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css"
       rel="stylesheet"
     />
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="/staticfile/styles.css" />
+    <link rel="stylesheet" href="/staticfile/style.css" />
 
-    <title>Web Design Mastery | The Gym</title>
+    <title>THE GYM BY JOHNSON | HYD</title>
   </head>
   <body>
     <nav>
       <div class="nav__logo">
-        <a href="#"><img src="/assets/3d_gym.png" alt="logo" /></a>
+        <a href="/"><img src="/assets/3d_gym.png" alt="logo" /></a>
       </div>
       <ul class="nav__links">
         <li class="link"><a href="#home-section" class="active">Home</a></li>
@@ -43,7 +44,11 @@
           fitter, and more confident you. Sign up for 'Make Your Body Shape' now
           and witness the incredible transformation your body is capable of!
         </p>
-        <button class="btn">Get Started</button>
+        <button class="btn" id="profile-button" style="display: none;">Go to profile</button> <br> <br>
+        <button class="btn" id="users-btn" style="display: none;">users list</button>
+
+        <!-- <button class="btn" id="profile-button" >Go to profile</button> <br> <br>
+        <button class="btn" id="users-btn" >users list</button> -->
       </div>
       <!-- <div class="header__image">
         <img src="/assets/header.png" alt="header" />
@@ -62,7 +67,7 @@
             Embrace the essence of strength as we delve into its various
             dimensions physical, mental, and emotional.
           </p>
-          <a href="#">Join Now <i class="ri-arrow-right-line"></i></a>
+          <!-- <a href="/diet">Click here <i class="ri-arrow-right-line"></i></a> -->
         </div>
         <div class="explore__card">
           <span><i class="ri-heart-pulse-fill"></i></span>
@@ -71,7 +76,7 @@
             It encompasses a range of activities that improve health, strength,
             flexibility, and overall well-being.
           </p>
-          <a href="#">Join Now <i class="ri-arrow-right-line"></i></a>
+          <!-- <a href="#">Join Now <i class="ri-arrow-right-line"></i></a> -->
         </div>
         <div class="explore__card">
           <span><i class="ri-run-line"></i></span>
@@ -80,7 +85,7 @@
             Through a combination of workout routines and expert guidance, we'll
             empower you to reach your goals.
           </p>
-          <a href="#">Join Now <i class="ri-arrow-right-line"></i></a>
+          <!-- <a href="#">Join Now <i class="ri-arrow-right-line"></i></a> -->
         </div>
         <div class="explore__card">
           <span><i class="ri-shopping-basket-fill"></i></span>
@@ -89,7 +94,7 @@
             Designed for individuals, our program offers an effective approach
             to gaining weight in a sustainable manner.
           </p>
-          <a href="#">Join Now <i class="ri-arrow-right-line"></i></a>
+          <!-- <a href="#">Join Now <i class="ri-arrow-right-line"></i></a> -->
         </div>
       </div>
     </section>
@@ -110,7 +115,7 @@
           challenged, ensuring you never hit a plateau in your fitness
           endeavors.
         </p>
-        <button class="btn">Book A Class</button>
+        <button class="btn" style="display: none;">Book A Class</button>
       </div>
     </section>
 
@@ -158,241 +163,50 @@
         <div class="price__card">
           <div class="price__card__content">
             <h4>Basic Plan</h4>
-            <h3 id="$16">$16</h3>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              Smart workout plan
-            </p>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              At home workouts
-            </p>
+            <h3>₹900</h3>
+            <p><i class="ri-checkbox-circle-line"></i> Gym Access</p>
+            <p><i class="ri-checkbox-circle-line"></i> Basic Equipment</p>
+            <!-- <p><i class="ri-checkbox-circle-line"></i> Locker Room</p> -->
+            <p><i class="ri-close-circle-line unavailable-feature"></i> Diet Consultation</p>
+            <p><i class="ri-close-circle-line unavailable-feature"></i> Personal Training</p>
           </div>
-          <button class="btn price__btn" id="joinbtn16">Join Now</button>
+          <a href="#">
+            <button class="btn price__btn">Join Now</button>
+          </a>
         </div>
+
         <div class="price__card">
           <div class="price__card__content">
-            <h4>Weekly Plan</h4>
-            <h3 id="$25">$25</h3>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              PRO Gyms
-            </p>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              Smart workout plan
-            </p>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              At home workouts
-            </p>
+            <h4>Premium Plan</h4>
+            <h3>₹1500</h3>
+            <p><i class="ri-checkbox-circle-line"></i> Gym Access</p>
+            <p><i class="ri-checkbox-circle-line"></i> All Equipment</p>
+            <p><i class="ri-checkbox-circle-line unavailable-feature"></i> Diet Consultation</p>
+             <!-- <p><i class="ri-checkbox-circle-line"></i> Group Classes</p> -->
+            <p><i class="ri-close-circle-line unavailable-feature"></i> Personal Training</p>
           </div>
-          <button class="btn price__btn" id="joinbtn25">Join Now</button>
+          <a href="#">
+            <button class="btn price__btn">Join Now</button>
+          </a>
         </div>
+
         <div class="price__card">
           <div class="price__card__content">
-            <h4>Monthly Plan</h4>
-            <h3 id="$45">$45</h3>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              ELITE Gyms & Classes
-            </p>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              PRO Gyms
-            </p>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              Smart workout plan
-            </p>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              At home workouts
-            </p>
-            <p>
-              <i class="ri-checkbox-circle-line"></i>
-              Personal Training
-            </p>
+            <h4>Pro Plan</h4>
+            <h3>₹3500</h3>
+            <p><i class="ri-checkbox-circle-line"></i> Gym Access</p>
+            <p><i class="ri-checkbox-circle-line"></i> Basic Equipment</p>
+            <p><i class="ri-checkbox-circle-line"></i> Unlimited Personal Training</p>
+            <p><i class="ri-checkbox-circle-line"></i> Diet & Nutrition Plan</p>
+            <p><i class="ri-checkbox-circle-line"></i> Priority Support</p>
+            <p><i class="ri-checkbox-circle-line"></i>  CrossFit & HIIT Training</p>
+            <p><i class="ri-checkbox-circle-line"></i> Personal Training</p>
           </div>
-          <button class="btn price__btn" id="joinbtn45">Join Now</button>
+          <a href="#">
+            <button class="btn price__btn">Join Now</button>
+          </a>
         </div>
       </div>
-    </section>
-
-    <section class="review" >
-      <div class="section__container review__container">
-        <span><i class="ri-double-quotes-r"></i></span>
-        <div class="review__content">
-          <h4>MEMBER REVIEW</h4>
-          <p>
-            What truly sets this gym apart is their expert team of trainers. The trainers are knowledgeable, approachable, and genuinely invested in helping members achieve their fitness goals. They take the time to understand individual needs and create personalized workout plans, ensuring maximum results and safety.
-          </p>
-          <div class="review__rating">
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-half-fill"></i></span>
-          </div>
-          <div class="review__footer">
-            <div class="review__member">
-              <img src="/assets/member.jpg" alt="member" />
-              <div class="review__member__details">
-                <h4>Jane Cooper</h4>
-                <p>Software Developer</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional Review 1 -->
-        <div class="review__content">
-          <h4>MEMBER REVIEW</h4>
-          <p>
-            The energy and discipline instilled here are unmatched. As a Fight Master, I've trained in many gyms, but none have provided the structured power-building routines like this one.
-          </p>
-          <div class="review__rating">
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-          </div>
-          <div class="review__footer">
-            <div class="review__member">
-              <img src="/assets/fight-master.jpg" alt="member" />
-              <div class="review__member__details">
-                <h4>Raj Verma</h4>
-                <p>Fight Master</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional Review 2 -->
-        <div class="review__content">
-          <h4>MEMBER REVIEW</h4>
-          <p>
-            The atmosphere here is electric! As a Dance Master, I value rhythm and coordination, and this gym creates an environment that inspires movement and expression.
-          </p>
-          <div class="review__rating">
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-line"></i></span>
-          </div>
-          <div class="review__footer">
-            <div class="review__member">
-              <img src="/assets/dance-master.jpg" alt="member" />
-              <div class="review__member__details">
-                <h4>Priya Sharma</h4>
-                <p>Dance Master</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional Review 3 -->
-        <div class="review__content">
-          <h4>MEMBER REVIEW</h4>
-          <p>
-            As a Fitness Mentor, I’ve never seen a better-balanced program for core, cardio, and muscle conditioning. This gym is an ecosystem for transformation.
-          </p>
-          <div class="review__rating">
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-          </div>
-          <div class="review__footer">
-            <div class="review__member">
-              <img src="/assets/fitness-mentor.jpg" alt="member" />
-              <div class="review__member__details">
-                <h4>Rohit Malhotra</h4>
-                <p>Fitness Mentor</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional Review 4 -->
-        <div class="review__content">
-          <h4>MEMBER REVIEW</h4>
-          <p>
-            As a Director, I lead a hectic life. The well-structured sessions and expert coaches here help me unwind while improving my health consistently.
-          </p>
-          <div class="review__rating">
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-half-fill"></i></span>
-          </div>
-          <div class="review__footer">
-            <div class="review__member">
-              <img src="/assets/director.jpg" alt="member" />
-              <div class="review__member__details">
-                <h4>Neha Kapoor</h4>
-                <p>Director</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional Review 5 -->
-        <div class="review__content">
-          <h4>MEMBER REVIEW</h4>
-          <p>
-            I'm an Assistant Director working long shoots. The personalized workouts here help me stay active and avoid injuries on set. Highly recommend!
-          </p>
-          <div class="review__rating">
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-line"></i></span>
-            <span><i class="ri-star-line"></i></span>
-          </div>
-          <div class="review__footer">
-            <div class="review__member">
-              <img src="/assets/assistant-director.jpg" alt="member" />
-              <div class="review__member__details">
-                <h4>Arjun Nair</h4>
-                <p>Assistant Director</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional Review 6 -->
-        <div class="review__content">
-          <h4>MEMBER REVIEW</h4>
-          <p>
-            This gym is a life-saver—literally! As a Doctor, I understand the importance of physical activity, and this place has everything I need to stay fit and energized.
-          </p>
-          <div class="review__rating">
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-fill"></i></span>
-            <span><i class="ri-star-line"></i></span>
-          </div>
-          <div class="review__footer">
-            <div class="review__member">
-              <img src="/assets/doctor.jpg" alt="member" />
-              <div class="review__member__details">
-                <h4>Dr. Meera Joshi</h4>
-                <p>Doctor</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="explore__nav">
-          <span id="prevReview"><i class="ri-arrow-left-line"></i></span>
-          <span id="nextReview"><i class="ri-arrow-right-line"></i></span>
-        </div>
     </section>
 
 
@@ -417,93 +231,226 @@
           <a href="https://www.google.com/maps/place/The+Gym+by+Johnson/@17.463635,78.4494786,907m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3bcb90f2d690f523:0x1272964efd34d42!8m2!3d17.4636299!4d78.4520535!16s%2Fg%2F11g7zwv4vh?entry=ttu&g_ep=EgoyMDI1MDUyOC4wIKXMDSoASAFQAw%3D%3D"><i class="ri-map-pin-line"></i></a>
         </div>
       </div>
-      <div class="footer__col">
-        <h4>Company</h4>
-        <a href="#">Business</a>
-        <a href="#">Franchise</a>
-        <a href="#">Partnership</a>
-        <a href="#">Network</a> 
-      </div>
        <div class="footer__col"> 
         <h4>Contact with us</h4>
-        <a href="tel:+919876543210"><i class="ri-phone-fill"></i> +91 9876543210</a>
-        <a href="mailto:thegymbyjohnson@gmail.com"><i class="ri-mail-fill"></i>thegymbyjohnson@gmail.com</a>  
+        <a href="tel:+918008984440"><i class="ri-phone-fill"></i> +91 8008984440</a>
+        <a href="mailto:johnson.hyd@gmail.com"><i class="ri-mail-fill"></i>johnson.hyd@gmail.com</a>  
       </div>
+      
     </footer>
     <div class="footer__bar">
       Copyright © 2020 the gym by johnson. All rights reserved.
     </div>
+   
+       <script ></script>
   </body>
 </html>
 
-<script>
-  window.addEventListener('load', () => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('SW registered:', reg))
-      .catch(err => console.error('SW registration failed:', err));
-  }
-  });
 
-  document.getElementById('joinNowBtn').addEventListener('click', () => {
-    window.location.href = '/signin';
-  });
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-  document.getElementById('joinbtn16').addEventListener('click', () => {
-    window.location.href = '/template/paytm.html';  // assuming both in same folder
-  });
 
-  document.getElementById('joinbtn25').addEventListener('click', () => {
-    window.location.href = '/template/paytm.html';  // assuming both in same folder
-  });
-
-  document.getElementById('joinbtn45').addEventListener('click', () => {
-    window.location.href = '/template/paytm.html';  // assuming both in same folder
-  });
-
-  const reviews = document.querySelectorAll('.review__content');
-  const nextBtn = document.getElementById('nextReview');
-  const prevBtn = document.getElementById('prevReview');
-  let currentIndex = 0;
-  let autoScrollInterval;
-
-  // Show the review at current index
-  function showReview(index) {
-    reviews.forEach((review, i) => {
-      review.classList.toggle('active', i === index);
+<script type="module">
+  (async () => {  
+      window.addEventListener('load', () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('SW registered:', reg))
+          .catch(err => console.error('SW registration failed:', err));
+      }
     });
-  }
 
-  // Start auto-scroll
-  function startAutoScroll() {
-    autoScrollInterval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % reviews.length;
-      showReview(currentIndex);
-    }, 1300); // 1.3 second
-  }
+    document.addEventListener("DOMContentLoaded", () => {
+      const priceButtons = document.querySelectorAll(".price__btn");
+      const profileBtn = document.getElementById("profile-button");
+      const userslistBtn = document.getElementById("users-btn");
 
-  // Stop and restart auto-scroll on manual interaction
-  function resetAutoScroll() {
-    clearInterval(autoScrollInterval);
-    startAutoScroll();
-  }
+      const userEmail = sessionStorage.getItem('Email');
+      const userRole = sessionStorage.getItem('Role');
 
-  // Next button click
-  nextBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % reviews.length;
-    showReview(currentIndex);
-    resetAutoScroll();
-  });
+      // Show buttons based on session
+      if (userEmail && userRole) {
+        if (profileBtn) profileBtn.style.display = 'inline-block';
+        if (userslistBtn) {
+          userslistBtn.style.display = userRole === 'admin' ? 'inline-block' : 'none';
+        }
 
-  // Previous button click
-  prevBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + reviews.length) % reviews.length;
-    showReview(currentIndex);
-    resetAutoScroll();
-  });
+        // Click listeners
+        profileBtn?.addEventListener("click", async () => {
+          try {
+            const response = await fetch('/verify-token', { credentials: 'include' });
+            if (response.ok) {
+              window.location.href = '/pro';
+            } else {
+              alert('Please sign in to access your profile.');
+            }
+          } catch (error) {
+            console.error('Error verifying token:', error);
+            alert('Something went wrong. Try again later.');
+          }
+        });
 
-  // Initial setup
-  showReview(currentIndex);
-  startAutoScroll();
+        userslistBtn?.addEventListener('click', () => {
+          window.location.href = '/users';
+        });
+      }
 
+      // 🔸 Razorpay logic
+      function getAmountFromText(button) {
+        const priceText = button.closest(".price__card").querySelector("h3").textContent;
+        return priceText.replace(/[^\d]/g, ""); // Extract only numbers
+      }
+
+
+      priceButtons.forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const card = btn.closest(".price__card");
+          const amount = card.querySelector("h3").textContent.replace(/[^\d]/g, "");
+          const plan = card.querySelector("h4").textContent.trim();  // Extracts "Basic Plan", "Premium Plan", etc.
+
+          sessionStorage.setItem("selectedAmount", amount);
+          sessionStorage.setItem("selectedPlan", plan);
+
+          // Verify token before proceeding
+          const authRes = await fetch("/verify-token", { credentials: 'include' });
+          if (!authRes.ok || authRes.status === 401) {
+            window.location.href = "/signin";
+            return;
+          }
+
+          // Redirect with amount and plan in URL
+          const encodedPlan = encodeURIComponent(plan);  // handle spaces safely
+          window.location.href = `/select-payment-method?amount=${amount}&plan=${encodedPlan}`;
+        });
+      });
+
+
+
+      // priceButtons.forEach(btn => {
+      //   btn.addEventListener("click", async () => {
+      //     try {
+      //       const authRes = await fetch("/verify-token", { credentials: 'include' });
+
+      //       if (!authRes.ok || authRes.status === 401) {
+      //         window.location.href = "/signin";
+      //         return;
+      //       }
+
+      //       const amount = btn.getAttribute("data-amount");
+      //       const orderRes = await fetch("/create-order", {
+      //         method: "POST",
+      //         headers: { "Content-Type": "application/json" },
+      //         credentials: "include",
+      //         body: JSON.stringify({ amount: parseInt(amount) })
+      //       });
+
+      //       const orderData = await orderRes.json();
+      //       if (!orderData?.order_id) {
+      //         alert("Failed to create payment order.");
+      //         return;
+      //       }
+
+      //       const options = {
+      //         key: "RAZORPAY_PUBLIC_KEY", 
+      //         amount: orderData.amount,
+      //         currency: "INR",
+      //         name: "My Gym",
+      //         description: "Membership Plan",
+      //         order_id: orderData.order_id,
+      //         handler: async function (response) {
+      //           const verifyRes = await fetch("/verify-payment", {
+      //             method: "POST",
+      //             headers: { "Content-Type": "application/json" },
+      //             credentials: "include",
+      //             body: JSON.stringify({
+      //               razorpay_payment_id: response.razorpay_payment_id,
+      //               razorpay_order_id: response.razorpay_order_id,
+      //               razorpay_signature: response.razorpay_signature,
+      //               amount: parseInt(amount)
+      //             })
+      //           });
+
+      //           const result = await verifyRes.json();
+      //           if (verifyRes.status === 200) {
+      //             alert("Payment successful!");
+      //             location.reload();
+      //           } else {
+      //             alert("Payment failed: " + result.detail);
+      //           }
+      //         },
+      //         theme: { color: "#f0860d" }
+      //       };
+
+      //       new Razorpay(options).open();
+
+      //     } catch (err) {
+      //       console.error("Payment error:", err);
+      //       alert("Something went wrong during payment.");
+      //     }
+      //   });
+      // });
+
+      // Other buttons
+      document.getElementById('joinNowBtn')?.addEventListener('click', () => {
+        window.location.href = '/signin';
+      });
+
+      document.getElementById('joinbtn16')?.addEventListener('click', () => {
+        window.location.href = '/template/paytm.html';
+      });
+
+      document.getElementById('joinbtn25')?.addEventListener('click', () => {
+        window.location.href = '/template/paytm.html';
+      });
+
+      document.getElementById('joinbtn45')?.addEventListener('click', () => {
+        window.location.href = '/template/paytm.html';
+      });
+
+      // 🔸 Review Auto Scroll
+      const reviews = document.querySelectorAll('.review__content');
+      const nextBtn = document.getElementById('nextReview');
+      const prevBtn = document.getElementById('prevReview');
+      let currentIndex = 0;
+      let autoScrollInterval;
+
+      function showReview(index) {
+        reviews.forEach((review, i) => {
+          review.classList.toggle('active', i === index);
+        });
+      }
+
+      function startAutoScroll() {
+        autoScrollInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % reviews.length;
+          showReview(currentIndex);
+        }, 1300);
+      }
+
+      function resetAutoScroll() {
+        clearInterval(autoScrollInterval);
+        startAutoScroll();
+      }
+
+      if (nextBtn && prevBtn) {
+        nextBtn.addEventListener('click', () => {
+          currentIndex = (currentIndex + 1) % reviews.length;
+          showReview(currentIndex);
+          resetAutoScroll();
+        });
+
+        prevBtn.addEventListener('click', () => {
+          currentIndex = (currentIndex - 1 + reviews.length) % reviews.length;
+          showReview(currentIndex);
+          resetAutoScroll();
+        });
+
+        showReview(currentIndex);
+        startAutoScroll();
+      }
+
+    });
+
+  })(); // End of IIFE
+  
 </script>

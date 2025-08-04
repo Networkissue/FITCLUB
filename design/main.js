@@ -1,122 +1,218 @@
+(async () => {  
 
-// register service worker after load
-// window.addEventListener('load', () => {
-//   if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('/sw.js')
-//       .then(reg => console.log('SW registered:', reg))
-//       .catch(err => console.error('SW registration failed:', err));
-//   }
-// });
+  document.addEventListener("DOMContentLoaded", async () => {
 
-
-// static/sw.js
-// self.addEventListener('install', (event) => {
-//   console.log('Service worker installed');
-// });
-
-// // static/sw.js
-// self.addEventListener('activate', (event) => {
-//   console.log('Service worker activated');
-// });
-
-let container = document.getElementById('container')
-
-toggle = () => {
-	container.classList.toggle('sign-in')
-	container.classList.toggle('sign-up')
-}
-
-setTimeout(() => {
-	container.classList.add('sign-in')
-}, 200)
-
-
-// signin 
-
-function generateCaptcha() {
-  const symbols = "!@#$%^&*";
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" + symbols; 
-  let captcha = '';
-
-  for (let i = 0; i < 6; i++) {
-    captcha += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-
-  // Instead of showing captcha in a div, put it inside the input
-  document.getElementById("captchaInput").value = captcha;
-}
-
-// Generate CAPTCHA on page load inside the input
-generateCaptcha();
-
-// Generate new CAPTCHA inside input when button clicked
-document.getElementById("generateCaptchaBtn").addEventListener("click", function () {
-  generateCaptcha();
-});
-
-
-
-// signup
-document.getElementById("signupBtn").addEventListener("click", async () => {
-  const data = {
-    username: document.getElementById("signupUsername").value,
-    email: document.getElementById("signupEmail").value,
-    mobile: document.getElementById("signupMobile").value,
-    gender: document.getElementById("gender").value,
-  };
-
-  try {
-    const res = await fetch("http://localhost:8000/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    const result = await res.json(); // Always try to parse JSON
-
-    if (res.ok) {
-      showSnackbar("Signup successful ✅! Redirecting to Sign In...", "green");
-      document.getElementById("container").classList.remove("sign-up");
-      document.getElementById("container").classList.add("sign-in");
+    // ✅ SIGNUP handler -------------------------------------------
+    const signupBtn = document.getElementById("signupBtn");
+    if (!signupBtn) {
+        console.error("❌ signupBtn NOT FOUND");
     } else {
-      // Display detailed error message from backend
-      showSnackbar(" " + (result.detail || "Unknown error"), "red");
+        signupBtn.addEventListener("click", async () => {
+          const username = document.getElementById("signupUsername")?.value.trim();
+          const email = document.getElementById("signupEmail")?.value.trim();
+          const mobile = document.getElementById("signupMobile")?.value.trim();
+          const gender = document.getElementById("gender")?.value;
+          const password = document.getElementById("signupPassword")?.value.trim();  // Ensure password is captured
+          const confirm_password = document.getElementById("signupConfirmPassword")?.value.trim();  // Ensure confirm_password is captured
+
+          // Log the values to confirm they're being captured
+          console.log("Password:", password);  
+          console.log("Confirm Password:", confirm_password);
+
+          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+          const data = { username, email, mobile, gender, password, confirm_password };
+
+
+          console.log("Sending signup data:", data);
+
+          console.log({
+            username,
+            email,
+            mobile,
+            gender,
+            password,
+            confirm_password
+          });
+
+          try {
+              const res = await fetch("/signup", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(data),
+              });
+
+              const result = await res.json();
+
+              if (res.ok) {
+                  showSnackbar(result.message, "success", "left");
+                  setTimeout(() => {
+                      toggle();
+                      generateCaptcha();
+                  }, 1500);
+              } else {
+                  showSnackbar(result.detail || result.message || "Signup failed", "error", "left");
+              }
+          } catch (err) {
+              console.error("❌ Signup error:", err);
+              showSnackbar("Internal error during signup", "error", "left");
+          }
+      });
     }
 
-  } catch (err) {
-    console.error("Network or unexpected error:", err);
-    showSnackbar("❗ An unexpected error occurred. Please try again later.", "red");
-  }
-});
 
+    const container = document.getElementById('container');
+    if (!container) {
+      console.error("❌ Container element not found.");
+      return;
+    }
 
-function showSnackbar(message, type = "success") {
-  const snackbar = document.getElementById("snackbar");
-  const messageEl = document.getElementById("snackbar-message");
-  const iconEl = document.querySelector(".snackbar-icon");
+    function toggle() {
+      container.classList.toggle('sign-in');
+      container.classList.toggle('sign-up');
+    }
+    window.toggle = toggle;
 
-  type = type.toLowerCase(); // normalize
-
-  // Set background color based on type
-  if (type === "error" || type === "red") {
-    snackbar.style.backgroundColor = "#d32f2f"; // red
-  } else {
-    snackbar.style.backgroundColor = "#4caf50"; // green
-  }
-
-  // Don't set iconEl.textContent since it's now styled via CSS
-  messageEl.textContent = message;
-
-  snackbar.classList.remove("hide");
-  snackbar.classList.add("show");
-  snackbar.style.visibility = "visible";
-
-  // Auto-hide after 3 seconds
-  setTimeout(() => {
-    snackbar.classList.remove("show");
-    snackbar.classList.add("hide");
     setTimeout(() => {
-      snackbar.style.visibility = "hidden";
-    }, 500); // match transition duration
-  }, 3000);
-}
+      container.classList.add('sign-in');
+    }, 200);
+
+    function generateCaptcha() {
+      const symbols = "!@#$%^&*";
+      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" + symbols;
+      let captcha = '';
+      for (let i = 0; i < 6; i++) {
+        captcha += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      document.getElementById("captchaInput").value = captcha;
+    }
+
+    generateCaptcha();
+    const generateCaptchaBtn = document.getElementById("generateCaptchaBtn");
+    if (generateCaptchaBtn) {
+      generateCaptchaBtn.addEventListener("click", generateCaptcha);
+    } else {
+      console.error("❌ generateCaptchaBtn not found");
+    }
+
+    // ✅ SIGNIN handler
+    const signinBtn = document.getElementById("signinBtn");
+    if (!signinBtn) {
+      console.error("❌ signinBtn NOT FOUND");
+    }else {
+      signinBtn.addEventListener("click", async () => {
+        const mobile = document.getElementById("signinMobile")?.value.trim();
+        const password = document.getElementById("signinPassword")?.value.trim();
+        const enteredCaptcha = document.getElementById("captchaValue")?.value.trim();
+        const actualCaptcha = document.getElementById("captchaInput")?.value.trim();
+    
+        console.log({ mobile, password, enteredCaptcha, actualCaptcha }); // ✅ Debug log
+    
+        if (!mobile || !password || !enteredCaptcha) {
+          showSnackbar("All fields are required", "error", "right");
+          return;
+        }
+    
+        if (enteredCaptcha !== actualCaptcha) {
+          showSnackbar("CAPTCHA does not match", "error", "right");
+          return;
+        }
+    
+        try {
+          const res = await fetch("/signin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mobile, password, actualCaptcha, captcha: enteredCaptcha }),
+            credentials: "include"
+          });
+    
+          const result = await res.json();
+    
+          if (res.ok) {
+            sessionStorage.setItem("Username", result.username);
+            sessionStorage.setItem("Email", result.email);
+            sessionStorage.setItem("Role", result.role);
+            sessionStorage.setItem("Mobile", result.mobile);
+            showSnackbar("✅ Login successful", "success", "right");  
+        
+            setTimeout(() => {
+                
+                window.location.href = "/pro";  
+            }, 1500);
+          
+          } else {
+            showSnackbar(result.detail || "Signin failed", "error", "right");
+          }
+        } catch (err) {
+          showSnackbar("Internal error", "error", "right");
+        }
+      });
+    }
+
+    
+    
+    
+
+    // ✅ Snackbar utility
+    let snackbarTimeout;
+    function showSnackbar(message, type = "success", direction = "left") {
+      const snackbar = document.getElementById("snackbar");
+      const messageEl = document.getElementById("snackbar-message");
+      const icon = document.getElementById("snackbar-icon");
+
+      if (!snackbar || !messageEl || !icon) {
+          console.error("Snackbar elements not found.");
+          return;
+      }
+
+      snackbar.classList.remove("slide-left", "slide-right", "show", "hide");
+      icon.classList.remove("error-icon");
+      icon.style.display = "flex";
+
+      const dirClass = direction === "right" ? "slide-right" : "slide-left";
+      snackbar.classList.add(dirClass);
+
+      if (type !== "success") {
+          snackbar.style.backgroundColor = "#d32f2f";
+          icon.classList.add("error-icon");
+      } else {
+          snackbar.style.backgroundColor = "#4caf50";
+          icon.style.display = "none";
+      }
+
+      message = message.replace(/^[❌✅✖️✔️\u2716\u2714\s]+/, '');
+      messageEl.textContent = message;
+
+      requestAnimationFrame(() => {
+          snackbar.classList.add("show");
+      });
+
+      if (snackbarTimeout) clearTimeout(snackbarTimeout);
+      snackbarTimeout = setTimeout(() => {
+          snackbar.classList.remove("show");
+          snackbar.classList.add("hide");
+      }, 2000);
+    }
+
+    document.querySelectorAll('.toggle-password').forEach(icon => {
+      icon.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // prevent parent click events
+    
+        const inputSelector = icon.getAttribute('toggle');
+        const input = document.querySelector(inputSelector);
+    
+        if (input) {
+          const isPassword = input.type === 'password';
+          input.type = isPassword ? 'text' : 'password';
+          icon.classList.toggle('bx-show', !isPassword);
+          icon.classList.toggle('bx-hide', isPassword);
+        }
+      });
+    });
+  });
+
+
+  sessionStorage.clear();
+
+})(); // End of IIFE

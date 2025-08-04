@@ -11,3 +11,4 @@ templates = Jinja2Templates(directory="template")
 @home.get("/")
 async def serve_paytm(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
