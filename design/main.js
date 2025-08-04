@@ -49,7 +49,7 @@
                   setTimeout(() => {
                       toggle();
                       generateCaptcha();
-                  }, 1500);
+                  }, 1000);
               } else {
                   showSnackbar(result.detail || result.message || "Signup failed", "error", "left");
               }
@@ -129,19 +129,32 @@
           const result = await res.json();
     
           if (res.ok) {
-            sessionStorage.setItem("Username", result.username);
-            sessionStorage.setItem("Email", result.email);
-            sessionStorage.setItem("Role", result.role);
-            sessionStorage.setItem("Mobile", result.mobile);
-            showSnackbar("✅ Login successful", "success", "right");  
-        
+            const { username, email, role, mobile } = result;
+
+            // Store user info in session storage
+            sessionStorage.setItem("Username", username || "");
+            sessionStorage.setItem("Email", email || "");
+            sessionStorage.setItem("Role", role || "");
+            sessionStorage.setItem("Mobile", mobile || "");
+
+            // Show success snackbar
+            showSnackbar("✅ Login successful", "success", "right");
+
+            // Redirect based on role after short delay
             setTimeout(() => {
-                
-                window.location.href = "/pro";  
-            }, 1500);
-          
+              const userRole = sessionStorage.getItem("Role");
+              if (userRole === "user") {
+                window.location.href = "/pro";
+              } else if (userRole === "admin") {
+                window.location.href = "/users";
+              } else {
+                showSnackbar("Unknown user role", "warning", "right");
+              }
+            }, 1000);
+
           } else {
-            showSnackbar(result.detail || "Signin failed", "error", "right");
+            // Show failure snackbar
+            showSnackbar(result?.detail || "Signin failed", "error", "right");
           }
         } catch (err) {
           showSnackbar("Internal error", "error", "right");

@@ -73,7 +73,7 @@ def send_approval_status_email(to_email: str, name: str, mobile: str, plan: str,
     <p>Hi {name},</p>
     <p>Your offline payment request for the <strong>{plan}</strong> plan has been 
     <b style="color:{color}; text-transform:uppercase;">{status}</b>.</p>
-    <p><b>Mobile:</b> {mobile}</p>
+    <p><b>Mobile:</b> 8009884440 </p>
     <p>If you have any questions, feel free to contact us.</p>
     <br>
     <p>Thanks,<br><strong>{sender_name}</strong></p>
