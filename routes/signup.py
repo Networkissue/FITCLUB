@@ -101,16 +101,16 @@ async def signup(request: Request):
             "role": "user",
             "name": username.title(),
             "joining_date": joining_date,
-            "last_payment_date": "NA",
-            "next_due_date": "NA",
+            "last_payment_date": None,
+            "next_due_date": None,
             "created_at": datetime.now()
         })
 
         # Insert payment due data into the database
         payment_due.insert_one({
             "user_id": user_id,
-            "last_payment": "NA",
-            "next_due": "NA",
+            "last_payment": None,
+            "next_due": None,
             "status": "active",
             "created_at": datetime.now()
         })

@@ -175,13 +175,16 @@
                                 <p class="status-text">
                                     {% if payment_status == 'active' %}
                                         Your membership is active and up to date.
-                                    {% elif payment_status == 'due_soon' %}
+                                    {% elif payment_status == 'due_soon' and days_until_due is not none %}
                                         Payment due in {{ days_until_due }} days.
+                                    {% elif days_until_due is not none %}
+                                        Payment is {{ days_until_due | abs }} days overdue.
                                     {% else %}
-                                        Payment is {{ days_until_due|abs }} days overdue.
+                                        Payment status is currently unavailable.
                                     {% endif %}
                                 </p>
                             </div>
+
                         </div>
                     </div>
                     

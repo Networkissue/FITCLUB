@@ -12,6 +12,8 @@ import smtplib
 from email.mime.text import MIMEText
 import razorpay
 from dateutil.parser import parse as parse_datetime
+from typing import Optional
+
 
 
 signin_router = APIRouter()
@@ -281,17 +283,19 @@ async def user_profile(request: Request):
 
     if next_due_date:
         days_until_due = (next_due_date - datetime.utcnow()).days
-    else:
-        days_until_due = None
 
-    if days_until_due is None:
-        payment_status = "inactive"
-    elif days_until_due < 0:
-        payment_status = "overdue"
-    elif days_until_due <= 7:
-        payment_status = "due_soon"
+        if days_until_due < 0:
+            payment_status = "overdue"
+
+        elif days_until_due <= 7:
+            payment_status = "due_soon"
+            
+        else:
+            payment_status = "active"
     else:
-        payment_status = "active"
+        days_until_due = 0  # 👈 fallback to 0 instead of None
+        payment_status = "inactive"
+
 
     cleaned_user = {
         "id": user.get("id"),
@@ -535,7 +539,7 @@ async def send_otp(request: Request, background_tasks: BackgroundTasks):
     if not email:
         raise HTTPException(status_code=400, detail="Email required")
 
-    user = await get_user_by_email(email)
+    user = get_user_by_email(email)
     if not user:
         raise HTTPException(status_code=404, detail="Email not found in database")
 
@@ -594,7 +598,7 @@ async def verify_otp_reset(request: Request):
         raise HTTPException(status_code=400, detail="OTP has expired")
 
     hashed_pwd = pwd_hash.hash(new_password)
-    result = await user_data.update_one({"email": email}, {"$set": {"password": hashed_pwd}})
+    result = user_data.update_one({"email": email}, {"$set": {"password": hashed_pwd}})
     
     if result.modified_count == 0:
         raise HTTPException(status_code=500, detail="Failed to update password")
@@ -755,14 +759,7 @@ async def offline_payment_request(request: Request, amount: int = Form(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to record request: {str(e)}")
 
-    
 
-# @signin_router.get("/offline-requests")
-# async def get_offline_requests():
-#     requests = list(offline_payments.find({"status": "pending"}))
-#     for r in requests:
-#         r["_id"] = str(r["_id"])  
-#     return requests
 
 # Admin HTML page
 @signin_router.get("/offline-requests")
@@ -771,6 +768,7 @@ async def admin_offline_page(request: Request):
     if not user or user.get("role") != "admin":
         return JSONResponse(status_code=403, content={"detail": "Unauthorized"})
     return templates.TemplateResponse("offline_requests.html", {"request": request})
+
 
 # API to get offline payment requests
 
@@ -800,8 +798,9 @@ async def get_offline_requests(
     for r in results_cursor:
         email = r.get("email")
         user_doc = user_data.find_one({"email": email})
-        user_id = user_doc.get("id") if user_doc else "NA"
-        mobile = user_doc.get("mobile", "NA")
+
+        user_id = user_doc.get("id", "NA") if user_doc else "NA"
+        mobile = user_doc.get("mobile", "NA") if user_doc else "NA"
 
         requests.append({
             "user_id": user_id,
@@ -810,8 +809,9 @@ async def get_offline_requests(
             "amount": r.get("amount", 0),
             "plan": r.get("plan", "NA"),
             "status": r.get("status", "pending"),
-            "requestedAt": r.get("requestedAt").strftime("%Y-%m-%d %H:%M")
+            "requestedAt": r.get("requestedAt").strftime("%Y-%m-%d %H:%M") if r.get("requestedAt") else "N/A"
         })
+
 
     return JSONResponse(status_code=200, content={
         "status": "success",
@@ -822,9 +822,6 @@ async def get_offline_requests(
 
 
 #approve request
-from dateutil.parser import parse as parse_date
-from datetime import datetime, timedelta
-from fastapi import HTTPException
 
 @signin_router.post("/api/offline-requests/{user_id}/approve")
 async def approve_offline_request(user_id: str, request: Request):
@@ -857,7 +854,7 @@ async def approve_offline_request(user_id: str, request: Request):
 
     if isinstance(requested_at, str):
         try:
-            requested_at = parse_date(requested_at)
+            requested_at = safe_parse_date(requested_at)
         except Exception:
             raise HTTPException(status_code=400, detail="Invalid requestedAt format")
 
@@ -940,7 +937,7 @@ async def update_offline_request(request: Request):
             raise HTTPException(status_code=400, detail="Missing requestedAt timestamp")
 
         if isinstance(requested_at, str):
-            requested_at = parse(requested_at)
+            requested_at = safe_parse_date(requested_at)
 
         due_date = requested_at + timedelta(days=30)
         now = datetime.utcnow()
