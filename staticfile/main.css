@@ -868,3 +868,76 @@ a#forgot-password:hover {
   color: darkred;
   text-decoration: underline;
 }
+
+@media only screen and (max-width: 1260px) and (max-height: 2800px) {
+  .container.sign-up .col.sign-up,
+  .container.sign-in .col.sign-in {
+    transform: translateY(-10%) !important;
+    z-index: 10 !important;
+  }
+
+  .form-wrapper {
+    position: relative;
+    top: -5%;
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  .toggle-password {
+    right: -10rem !important;
+  }
+
+  .content-row {
+    align-items: flex-start !important;
+  }
+
+  .content-row .col {
+    transform: translateY(0);
+    background-color: unset;
+  }
+
+  .col {
+    width: 100%;
+    position: absolute;
+    padding: 2rem;
+    background-color: var(--white);
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    transform: translateY(100%);
+    transition: 1s ease-in-out;
+  }
+
+  .row {
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  .form p {
+    margin: 1rem 0;
+    font-size: 0.8rem;
+  }
+
+  .form,
+  .social-list {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .text {
+    margin: 0;
+  }
+
+  .text p {
+    display: none;
+  }
+
+  .text h2 {
+    margin: 0.5rem;
+    font-size: 2.5rem;
+  }
+
+  #users-btn {
+    display: none;
+  }
+}
