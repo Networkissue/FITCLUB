@@ -56,10 +56,44 @@
       color: white;
     }
 
+    .btn-online:hover {
+      background-color: #d46f00; /* slightly darker orange */
+      transform: scale(1.03);
+    }
+
+
     .btn-offline {
       background-color: #555;
       color: white;
     }
+
+    .btn-offline:hover {
+      background-color: #333;
+      transform: scale(1.03);
+    }
+
+    .btn-back {
+      background-color: #e0e0e0;
+      color: #333;
+      border: 2px solid #bbb;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+      background-color: #cfcfcf;
+      color: #000;
+      border-color: #999;
+      transform: scale(1.03);
+    }
+
+
+
 
     /* Modal styles */
     .modal-overlay {
@@ -103,36 +137,79 @@
     }
 
     /* Responsive */
+
     @media (max-width: 768px) {
       h2, .amount {
         font-size: 20px;
       }
 
-      button {
+      button,
+      .btn-online,
+      .btn-offline,
+      .btn-back {
         padding: 0.85rem;
         font-size: 15px;
       }
-    }
 
-    @media (max-width: 425px) {
-      h2, .amount {
-        font-size: 18px;
+      .btn-online:hover {
+        background-color: #d46f00;
+        transform: scale(1.03);
       }
 
-      button {
-        padding: 0.8rem;
-        font-size: 14px;
+      .btn-offline:hover {
+        background-color: #333;
+        transform: scale(1.03);
       }
 
-      .modal {
-        padding: 1.5rem;
-      }
-
-      .modal button {
-        padding: 0.6rem 1.2rem;
-        font-size: 14px;
+      .btn-back:hover {
+        background-color: #cfcfcf;
+        color: #000;
+        border-color: #999;
+        transform: scale(1.03);
       }
     }
+
+    /* Mobile */
+      @media (max-width: 425px) {
+        h2, .amount {
+          font-size: 18px;
+        }
+
+        button,
+        .btn-online,
+        .btn-offline,
+        .btn-back {
+          padding: 0.8rem;
+          font-size: 14px;
+        }
+
+        .modal {
+          padding: 1.5rem;
+        }
+
+        .modal button {
+          padding: 0.6rem 1.2rem;
+          font-size: 14px;
+        }
+
+        .btn-online:hover {
+          background-color: #d46f00;
+          transform: scale(1.03);
+        }
+
+        .btn-offline:hover {
+          background-color: #333;
+          transform: scale(1.03);
+        }
+
+        .btn-back:hover {
+          background-color: #cfcfcf;
+          color: #000;
+          border-color: #999;
+          transform: scale(1.03);
+        }
+      }
+
 
   .spinner {
     margin-top: 1rem;
@@ -157,8 +234,11 @@
   <div class="container">
     <h2>Select Your Payment Method</h2>
     <div class="amount" id="amountDisplay">₹{{ amount }}</div>
-    <button class="btn-online" id="payOnlineBtn" style="display: none;">Pay Online</button>
+    
+
+    <button class="btn-online" id="payOnlineBtn">Pay Online</button>
     <button class="btn-offline" id="payOfflineBtn">Pay Cash</button>
+    <button class="btn-back" onclick="window.location.href='/'">← Back</button>
   </div>
 
  

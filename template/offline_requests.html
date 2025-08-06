@@ -12,6 +12,10 @@
   </style> -->
 </head>
 <body>
+  <div id="loader-overlay">
+    <div class="spinner"></div>
+  </div>
+
   <section class="container">
     <header>
         <!-- Existing header content -->
@@ -25,7 +29,7 @@
     <div class="filter-bar">
       <input type="text" id="searchInput" placeholder="Search by email..." />
       <select id="statusFilter">
-        <option value="all">Select status</option>
+        <option value="all">All</option>
         <option value="pending">Pending</option>
         <option value="approved">Approved</option>
         <option value="rejected">Rejected</option>
@@ -91,6 +95,11 @@
         window.location.href = "/users";
     });
 
+    window.addEventListener("DOMContentLoaded", () => {
+      loadOfflineRequests();
+    });
+
+
     const tbody = document.getElementById("requestsBody");
     const pagination = document.getElementById("pagination");
     const searchInput = document.getElementById("searchInput");
@@ -131,40 +140,61 @@
 
 
     async function loadOfflineRequests(page = 1, search = "", status = "") {
-      const res = await fetch(`/api/offline-requests?page=${page}&search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}`, {
-        credentials: "include"
-      });
-      const data = await res.json();
+      showLoader(); // 🟡 Show loader before fetching
+      try {
+        const res = await fetch(`/api/offline-requests?page=${page}&search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}`, {
+          credentials: "include"
+        });
+        const data = await res.json();
 
-      if (data.status !== "success") {
-        tbody.innerHTML = "<tr><td colspan='6'>Failed to load data</td></tr>";
-        return;
-      }
+        if (data.status !== "success") {
+          tbody.innerHTML = "<tr><td colspan='6'>Failed to load data</td></tr>";
+          return;
+        }
 
-      tbody.innerHTML = "";
+        tbody.innerHTML = "";
 
-      data.requests.forEach(req => {
-        const row = document.createElement("tr");
-        row.id = `row-${req.user_id}`;
+        data.requests.forEach(req => {
+          const row = document.createElement("tr");
+          row.id = `row-${req.user_id}`;
 
-        row.innerHTML = `
-          <td>${req.email}</td>
-          <td>${req.mobile}</td>
-          <td>₹${req.amount}</td>
-          <td>${req.plan}</td>
-          <td class="${req.status === 'pending' ? 'status-pending' : ''}">${req.status}</td>
-          <td>${req.requestedAt}</td>
-          <td>
-            ${req.status === 'pending' ? `
-              <button id="approve-${req.user_id}" class="action-btn approve-btn" onclick="prepareAction('${req.user_id}', 'approve')">Approve</button>
-              <button id="reject-${req.user_id}" class="action-btn reject-btn" onclick="prepareAction('${req.user_id}', 'reject')">Reject</button>
-            ` : req.status.charAt(0).toUpperCase() + req.status.slice(1)}
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-      renderPagination(data.page, data.total_pages);
+          row.innerHTML = `
+            <td>${req.email}</td>
+            <td>${req.mobile}</td>
+            <td>₹${req.amount}</td>
+            <td>${req.plan}</td>
+            <td class="${req.status === 'pending' ? 'status-pending' : ''}">${req.status}</td>
+            <td>${req.requestedAt}</td>
+            <td>
+              ${req.status === 'pending' ? `
+                <button id="approve-${req.user_id}" class="action-btn approve-btn" onclick="prepareAction('${req.user_id}', 'approve')">Approve</button>
+                <button id="reject-${req.user_id}" class="action-btn reject-btn" onclick="prepareAction('${req.user_id}', 'reject')">Reject</button>
+              ` : req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+        renderPagination(data.page, data.total_pages);
+      } catch (err) {
+      tbody.innerHTML = "<tr><td colspan='7'>Error loading data</td></tr>";
+      console.error("Error fetching offline requests:", err);
+    } finally {
+      hideLoader(); // 🟢 Always hide loader, even on error
     }
+  }
+
+
+
+    function showLoader() {
+        const loader = document.getElementById("loader-overlay");
+        if (loader) loader.classList.remove("hidden");
+    }
+
+    function hideLoader() {
+        const loader = document.getElementById("loader-overlay");
+        if (loader) loader.classList.add("hidden");
+    }
+
 
     function renderPagination(current, total) {
       pagination.innerHTML = "";
