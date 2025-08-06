@@ -132,7 +132,7 @@
             const { username, email, role, mobile } = result;
 
             // Store user info in session storage
-            sessionStorage.setItem("Username", username || "");
+            sessionStorage.setItem("Name", name.charAt(0).toUpperCase() + name.slice(1) || ""); // or use full title case if needed
             sessionStorage.setItem("Email", email || "");
             sessionStorage.setItem("Role", role || "");
             sessionStorage.setItem("Mobile", mobile || "");

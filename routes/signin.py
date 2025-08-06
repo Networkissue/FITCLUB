@@ -335,6 +335,7 @@ async def update_profile(
     email: str = Form(...),
     mobile: str = Form(...),
     gender: str = Form(...),
+    # username: str = Form(...),
     token: str = Cookie(default=None)
 ):
     user = get_user_by_cookie(request)
@@ -343,7 +344,8 @@ async def update_profile(
 
     # 🛠️ Fetch the user collection and update fields
     update_fields = {
-        # "name": name,
+        "name": name.title(),              # ✅ formatted name
+        # "username": username,                  # ✅ set ONCE here
         "email": email,
         "mobile": mobile,
         "gender": gender,

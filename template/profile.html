@@ -248,6 +248,7 @@
     </div>
 
     <script type="module">
+
         document.addEventListener('DOMContentLoaded', async () => {
 
             showLoading(); // 🔁 Show loader as soon as page starts
@@ -304,6 +305,15 @@
                     document.getElementById(`${targetTab}-tab`).classList.add('active');
                 });
             });
+
+            // form.querySelectorAll('input, select').forEach(input => {
+            //     hideLoading();
+            //     if (input.id !== 'username') {
+            //         input.removeAttribute('readonly');
+            //         if (input.tagName === 'SELECT') input.removeAttribute('disabled');
+            //     }
+            // });
+
         
             // 🧠 Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
