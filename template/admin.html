@@ -105,6 +105,40 @@
         background-color: #e5e7eb84;
         }
 
+        #loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(17, 19, 23, 0.8); /* semi-transparent dark background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #f0860d;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loader-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
         @media (max-width: 768px) {
 
         .status-active::before {
@@ -461,6 +495,10 @@
         </style>
 </head>
 <body>
+    <div id="loader-overlay">
+        <div class="spinner"></div>
+    </div>
+    
     <div class="profile-container">
         <header class="profile-header">
             <div class="header-content">
@@ -621,6 +659,7 @@
                     });
 
                     renderPagination(data.page, data.total_pages);
+                    hideLoader(); // 👈 Hide loader after rendering
                 })
                 .catch(err => {
                     console.error("Fetch error:", err);
@@ -693,6 +732,17 @@
                 currentPage = 1;
                 loadUsers(currentPage);
             });
+
+            function showLoader() {
+                const loader = document.getElementById("loader-overlay");
+                if (loader) loader.classList.remove("hidden");
+            }
+
+            function hideLoader() {
+                const loader = document.getElementById("loader-overlay");
+                if (loader) loader.classList.add("hidden");
+            }
+
 
             //total-users
             // document.getElementById("total-users").textContent = `Total Users: ${data.total_users}`;

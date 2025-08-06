@@ -150,7 +150,7 @@
               } else {
                 showSnackbar("Unknown user role", "warning", "right");
               }
-            }, 1000);
+            }, 500);
 
           } else {
             // Show failure snackbar

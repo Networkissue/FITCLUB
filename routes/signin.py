@@ -560,6 +560,10 @@ async def reset_password(request: Request):
     otp = data.get("otp")
     new_password = data.get("password")
 
+    # ✅ Check for empty fields
+    if not email or not otp or not new_password:
+        raise HTTPException(status_code=400, detail="All fields required")
+
     stored = otp_storage.get(email)
     if not stored or stored["otp"] != otp:
         raise HTTPException(status_code=400, detail="Invalid OTP")
