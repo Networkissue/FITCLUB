@@ -941,3 +941,83 @@ a#forgot-password:hover {
     display: none;
   }
 }
+
+
+/* Responsive for major mobile widths */
+@media only screen and (max-width: 600px) {
+  html, body {
+    overflow: auto;
+  }
+
+  .text h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-wrapper {
+    padding: 0 1rem;
+    top: 0;
+  }
+
+  .input-group input {
+    padding: 0.8rem 2.5rem;
+    font-size: 0.95rem;
+  }
+
+  .toggle-password {
+    right: 1.5rem !important;
+    font-size: 1.4rem;
+  }
+
+  .form button {
+    font-size: 1rem;
+    padding: 0.5rem 0;
+  }
+
+  #generateCaptchaBtn {
+    width: 100%;
+    font-size: 0.8rem;
+  }
+
+  #captchaInput {
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  a#forgot-password {
+    font-size: 0.9rem;
+  }
+}
+
+
+/* iPhone SE / smaller screens */
+@media only screen and (max-width: 375px) {
+  .text h2 {
+    font-size: 1.3rem;
+  }
+
+  .input-group input {
+    padding: 0.7rem 2.2rem;
+  }
+
+  .toggle-password {
+    font-size: 1.3rem;
+    right: 1.2rem !important;
+  }
+
+  #captchaInput {
+    width: 100%;
+  }
+}
+
+/* Pixel 4a, Galaxy S10e, etc. */
+@media only screen and (max-width: 360px) {
+  .form-wrapper {
+    padding: 0;
+  }
+
+  .form {
+    padding: 0.5rem;
+  }
+}
+
+
