@@ -19,3 +19,9 @@ handlers:
 
 - url: /.*
   script: auto
+  
+readiness_check:
+  path: "/_ah/warmup"             # Route to call to test if app is ready
+  check_interval_sec: 5           # Ping every 5 seconds to see if it's ready
+  timeout_sec: 4                  # If no response in 4 seconds, consider it failed
+  failure_threshold: 2            # Fail only after 2 consecutive failures
