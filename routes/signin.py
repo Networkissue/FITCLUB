@@ -757,7 +757,7 @@ async def offline_payment_request(request: Request, amount: int = Form(...)):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     email = user.get("email")
-    user_id = user.get("user_id")  # 👈 Your custom user_id
+    user_id = user.get("user_id") or user.get("id")  # fallback for user ID
 
     try:
         plan = get_membership_plan(amount)
@@ -771,9 +771,8 @@ async def offline_payment_request(request: Request, amount: int = Form(...)):
             "requestedAt": datetime.utcnow()
         })
 
+        # Call your send_offline_request_email with correct args
         send_offline_request_email(
-            # receiver_email="Thegymbyjohnson@gmail.com",
-            receiver_email="rohithvaddepally4@gmail.com",
             user_email=email,
             plan=plan,
             amount=amount
@@ -782,6 +781,9 @@ async def offline_payment_request(request: Request, amount: int = Form(...)):
         return JSONResponse(status_code=200, content={"message": "Offline request recorded."})
 
     except Exception as e:
+        import traceback
+        print("Error in offline_payment_request:", e)
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Failed to record request: {str(e)}")
 
 
