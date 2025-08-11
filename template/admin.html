@@ -626,10 +626,14 @@
                     tbody.innerHTML = "";
 
                     data.users.forEach(user => {
-                        let statusIcon = "❓";
-                        if (user.status === "active") statusIcon = "✅";
-                        else if (user.status === "warning") statusIcon = "⚠️";
-                        else if (user.status === "overdue") statusIcon = "❌";
+                        // let statusIcon = "❓";
+                        // if (user.status === "active") statusIcon = "✅";
+                        // else if (user.status === "warning") statusIcon = "⚠️";
+                        // else if (user.status === "overdue") statusIcon = "❌";
+                        let statusIcon = ""; // default
+                        if (user.status.toLowerCase() === "online") statusIcon = "🌐";
+                        else if (user.status.toLowerCase() === "offline") statusIcon = "📄";
+
 
                         const row = document.createElement("tr");
                         // row.innerHTML = `

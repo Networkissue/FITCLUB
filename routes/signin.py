@@ -21,7 +21,11 @@ signin_router = APIRouter()
 templates = Jinja2Templates(directory="template")
 pwd_hash = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
+# Admin emails list
+admin_emails = [
+    "thegymbyjohnson@gmail.com",
+    "rohithvaddepally4@gmail.com"
+]
 otp_storage = {}  # { email: { 'otp': '123456', 'expires': datetime }}
 
 SMTP_SERVER = "smtp.gmail.com"
@@ -86,42 +90,26 @@ def get_payment_cycle_range(date_str: str):
     return cycle_start, cycle_end
 
 def send_approval_status_email(to_email: str, name: str, mobile: str, plan: str, status: str):
-    sender_email = "rohithvaddepally4@gmail.com"
-    sender_name = "The Gym By Johnson"
-    sender_password = "majjjuadrgtxybqv"
-
     subject = f"Offline Payment {status.title()} - {plan} Plan"
-    
     color = "green" if status == "approved" else "red"
 
-    body = f"""
+    html_content = f"""
     <p>Hi {name},</p>
     <p>Your offline payment request for the <strong>{plan}</strong> plan has been 
     <b style="color:{color}; text-transform:uppercase;">{status}</b>.</p>
-    <p><b>Mobile:</b> 8009884440 </p>
+    <p><b>Mobile:</b> 8008984440 </p>
     <p>If you have any questions, feel free to contact us.</p>
     <br>
-    <p>Thanks,<br><strong>{sender_name}</strong></p>
+    <p>Thanks,<br><strong>The Gym By Johnson</strong></p>
     """
 
-    msg = MIMEText(body, "html")
-    msg["Subject"] = subject
-    msg["From"] = formataddr((sender_name, sender_email))
-    msg["To"] = to_email
-
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, sender_password)
-            send_email(sender_email, to_email, msg.as_string())
-        print(f"✅ Status email sent to {to_email}")
-    except Exception as e:
-        print(f"❌ Failed to send email to {to_email}: {e}")
+    send_email(to_email, subject, html_content)
 
 
 def send_payment_status_email(receiver_email: str, customer_name: str, status: str):
     sender_email = "rohithvaddepally4@gmail.com"
     sender_name = "The Gym By Johnson"
-    sender_password = "majjjuadrgtxybqv"  # Use app password, not actual Gmail password
+    sender_password = "majjjuadrgtxybqv"  # Gmail app password
 
     subject = f"Payment Reminder: {status.replace('_', ' ').title()}"
     body = f"""
@@ -132,6 +120,7 @@ def send_payment_status_email(receiver_email: str, customer_name: str, status: s
     <p>Thank you for being a valued member!</p>
     """
 
+    # Create the HTML email
     msg = MIMEText(body, "html")
     msg["Subject"] = subject
     msg["From"] = formataddr((sender_name, sender_email))
@@ -140,19 +129,15 @@ def send_payment_status_email(receiver_email: str, customer_name: str, status: s
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, sender_password)
-            send_email(sender_email, receiver_email, msg.as_string())
+            server.sendmail(sender_email, receiver_email, msg.as_string())  # ✅ Correct method
         print(f"✅ Email sent to {receiver_email}")
     except Exception as e:
         print(f"❌ Failed to send to {receiver_email}: {e}")
 
-def send_offline_request_email(receiver_email: str, user_email: str, plan: str, amount: int):
-    sender_email = "rohithvaddepally4@gmail.com"
-    sender_name = "The Gym By Johnson"
-    sender_password = "majjjuadrgtxybqv"  # Use App Password
 
+def send_offline_request_email(user_email: str, plan: str, amount: int):
     subject = f"New Offline Payment Request: {plan} Plan"
-
-    body = f"""
+    html_content = f"""
     <p>Dear Admin,</p>
     <p><strong>{user_email}</strong> has submitted an offline payment request.</p>
     <p><b>Plan:</b> {plan}<br>
@@ -160,84 +145,11 @@ def send_offline_request_email(receiver_email: str, user_email: str, plan: str, 
     <b>Status:</b> <span style="color:orange;">PENDING</span></p>
     <p>Please verify and collect payment manually at the gym.</p>
     <hr>
-    <p style="font-size: 12px; color: gray;">This is an automated notification from <strong>{sender_name}</strong>.</p>
+    <p style="font-size: 12px; color: gray;">This is an automated notification from <strong>The Gym By Johnson</strong>.</p>
     """
-
-    msg = MIMEText(body, "html")
-    msg["Subject"] = subject
-    msg["From"] = formataddr((sender_name, sender_email))
-    msg["To"] = receiver_email
-
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, sender_password)
-            send_email(sender_email, receiver_email, msg.as_string())
-        print(f"✅ Offline request email sent to {receiver_email}")
-    except Exception as e:
-        print(f"❌ Failed to send to {receiver_email}: {e}")
-
-
-ADMIN_EMAILS = [
-    "rohithvaddepally4@gmail.com",
-    "revanthvaddepally@gmail.com"
-]
-
-def send_signup_notifications(user_email, user_name, user_id):
-    # Send welcome email to the user
-    try:
-        send_email(
-            user_email,
-            "Welcome to The Gym!",
-            f"<h2>Hi {user_name},</h2><p>Welcome! Your user ID is <b>{user_id}</b>.</p>"
-        )
-        print(f"✅ Welcome email sent to {user_email}")
-    except Exception as e:
-        print(f"❌ Failed to send welcome email to {user_email}: {e}")
-
-    # Send notification email to admins
-    for admin_email in ADMIN_EMAILS:
-        try:
-            send_email(
-                admin_email,
-                "New User Signup Notification",
-                f"<h3>New Signup</h3><p>User: {user_name} ({user_email})<br>User ID: <b>{user_id}</b></p>"
-            )
-            print(f"✅ Admin notification sent to {admin_email}")
-        except Exception as e:
-            print(f"❌ Failed to send admin notification to {admin_email}: {e}")
-
-# def send_signup_notifications(user_id: str, user_email: str, username: str, mobile: str, joining_date: str):
-   
-#     user_subject = "Welcome to The Gym By Johnson!"
-#     user_body = f"""
-#     <p>Hi {username},</p>
-#     <p>Welcome to <b>The Gym By Johnson</b>! Your account has been successfully created.</p>
-#     <p>Your User ID is: <b>{user_id}</b></p>
-#     <p>You can now log in and explore your membership options.</p>
-#     <br>
-#     <p style="font-size: 12px; color: gray;">This is an automated email from <strong>The Gym By Johnson</strong>.</p>
-#     """
-#     send_email(user_email, user_subject, user_body)
-
     
-#     admin_email = "rohithvaddepally4@gmail.com"  
-#     admin_subject = f"New User Signup: {username} (ID: {user_id})"
-#     admin_body = f"""
-#     <p>Dear Admin,</p>
-#     <p>A new user has just signed up:</p>
-#     <p>
-#         <b>User ID:</b> {user_id}<br>
-#         <b>Name:</b> {username}<br>
-#         <b>Email:</b> {user_email}<br>
-#         <b>Mobile:</b> {mobile}<br>
-#         <b>Joining Date:</b> {joining_date}
-#     </p>
-#     <hr>
-#     <p style="font-size: 12px; color: gray;">This is an automated notification from <strong>The Gym By Johnson</strong>.</p>
-#     """
-#     send_email(admin_email, admin_subject, admin_body)
-
-
+    for admin_email in admin_emails:
+        send_email(admin_email, subject, html_content)
 
 
 
@@ -547,6 +459,8 @@ async def admin_dashboard(request: Request):
         return JSONResponse(status_code=403, content={"status": "error", "detail": "Unauthorized"})
     
     return templates.TemplateResponse("admin.html", {"request": request})
+
+
 @signin_router.get("/api/users")
 async def api_get_users(request: Request, page: int = Query(1), limit: int = Query(5), search: str = ""):
     user = get_user_by_cookie(request)
@@ -593,9 +507,24 @@ async def api_get_users(request: Request, page: int = Query(1), limit: int = Que
         if isinstance(u.get("next_due_date"), datetime):
             u["next_due_date"] = u["next_due_date"].strftime("%Y-%m-%d")
 
-        # Add status
-        payment = payment_due.find_one({"user_id": u["id"]}, {"_id": 0, "status": 1})
-        u["status"] = payment["status"] if payment else "unknown"
+        # Add status based on payment_due collection and next_due date
+        payment = payment_due.find_one({"user_id": u["id"]}, {"_id": 0, "status": 1, "next_due": 1})
+
+        status = "inactive"  # default
+
+        if payment:
+            next_due = payment.get("next_due")
+            if next_due and isinstance(next_due, datetime):
+                if next_due >= datetime.now():
+                    status = payment.get("status", "inactive")
+                else:
+                    status = "inactive"
+            else:
+                status = "inactive"
+        else:
+            status = "inactive"
+
+        u["status"] = status
 
         # Add membership
         latest_payment = payment_history.find_one(
@@ -613,8 +542,9 @@ async def api_get_users(request: Request, page: int = Query(1), limit: int = Que
         "users": users,
         "page": page,
         "total_pages": total_pages,
-        "total_users": total_users  # ✅ now excludes admin
+        "total_users": total_users
     })
+
 
 
 #forgot-password

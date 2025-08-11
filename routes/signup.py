@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from app.models import *
-from routes.signin import send_signup_notifications, send_email
+from routes.signin import send_email
 
 signup_router = APIRouter()
 templates = Jinja2Templates(directory='template')
@@ -112,7 +112,7 @@ async def signup(request: Request, background_tasks: BackgroundTasks):
             "user_id": user_id,
             "last_payment": None,
             "next_due": None,
-            "status": "active",
+            "status": "inactive",
             "created_at": datetime.now()
         })
 
