@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 from database.database import user_data, payment_due, payment_history, get_membership_plan
 from fastapi.templating import Jinja2Templates
@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from app.models import *
+from routes.signin import send_signup_notifications, send_email
 
 signup_router = APIRouter()
 templates = Jinja2Templates(directory='template')
@@ -27,7 +28,7 @@ def generate_user_id(mobile: str) -> str:
         return f"user{count:03d}"
 
 @signup_router.post("/signup")
-async def signup(request: Request):
+async def signup(request: Request, background_tasks: BackgroundTasks):
     try:
         body = await request.json()
         username = body.get("username")
@@ -126,6 +127,35 @@ async def signup(request: Request):
             "method": "signup",
             "remarks": "Initial signup account creation"
         })
+
+        # User email
+        background_tasks.add_task(
+            send_email,
+            email,
+            "Welcome To The GYM!",
+            f"<h2>Thanks for signing up! Your user id is {user_id}</h2>"
+        )
+
+        # Admin emails list
+        admin_emails = [
+            "thegymbyjohnson@gmail.com",
+            "rohithvaddepally4@gmail.com"
+        ]
+
+        # Admin email
+        for admin_email in admin_emails:
+            background_tasks.add_task(
+                send_email,
+                admin_email,
+                "New User Registered",
+                f"""
+                <h2>New User Registration</h2>
+                <p><strong>Name:</strong> {username}</p>
+                <p><strong>User ID:</strong> {user_id}</p>
+                <p>🎉 A new user has joined The Gym!</p>
+                """
+            )
+
 
         return JSONResponse(status_code=201, content={"message": "Account created successfully"})
 

@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 import razorpay
 from dateutil.parser import parse as parse_datetime
 from typing import Optional
+from email.mime.multipart import MIMEMultipart
 
 
 
@@ -23,9 +24,33 @@ pwd_hash = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 otp_storage = {}  # { email: { 'otp': '123456', 'expires': datetime }}
 
-
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_USER = "rohithvaddepally4@gmail.com"
+SMTP_PORT = 587
+sender_name = "The Gym By Johnson"
+SMTP_PASS = "majjjuadrgtxybqv"  # Gmail App Password
 
 client = razorpay.Client(auth=("rzp_test_pibrBAMVpfKNFN", "nzEjD1hevJTvRenH2oJzz1Gn"))
+
+
+def send_email(to_email, subject, html_content):
+    from_email = "rohithvaddepally4@gmail.com"
+    from_password = "majjjuadrgtxybqv"
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = from_email
+    msg["To"] = to_email
+
+    # Set content type as HTML
+    part = MIMEText(html_content, "html")
+    msg.attach(part)
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(from_email, from_password)
+        server.sendmail(from_email, to_email, msg.as_string())
+
+
 
 # ✅ Define safe parser
 def safe_parse_date(value):
@@ -87,7 +112,7 @@ def send_approval_status_email(to_email: str, name: str, mobile: str, plan: str,
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, sender_password)
-            server.sendmail(sender_email, to_email, msg.as_string())
+            send_email(sender_email, to_email, msg.as_string())
         print(f"✅ Status email sent to {to_email}")
     except Exception as e:
         print(f"❌ Failed to send email to {to_email}: {e}")
@@ -115,7 +140,7 @@ def send_payment_status_email(receiver_email: str, customer_name: str, status: s
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, sender_password)
-            server.sendmail(sender_email, receiver_email, msg.as_string())
+            send_email(sender_email, receiver_email, msg.as_string())
         print(f"✅ Email sent to {receiver_email}")
     except Exception as e:
         print(f"❌ Failed to send to {receiver_email}: {e}")
@@ -146,10 +171,74 @@ def send_offline_request_email(receiver_email: str, user_email: str, plan: str, 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, sender_password)
-            server.sendmail(sender_email, receiver_email, msg.as_string())
+            send_email(sender_email, receiver_email, msg.as_string())
         print(f"✅ Offline request email sent to {receiver_email}")
     except Exception as e:
         print(f"❌ Failed to send to {receiver_email}: {e}")
+
+
+ADMIN_EMAILS = [
+    "rohithvaddepally4@gmail.com",
+    "revanthvaddepally@gmail.com"
+]
+
+def send_signup_notifications(user_email, user_name, user_id):
+    # Send welcome email to the user
+    try:
+        send_email(
+            user_email,
+            "Welcome to The Gym!",
+            f"<h2>Hi {user_name},</h2><p>Welcome! Your user ID is <b>{user_id}</b>.</p>"
+        )
+        print(f"✅ Welcome email sent to {user_email}")
+    except Exception as e:
+        print(f"❌ Failed to send welcome email to {user_email}: {e}")
+
+    # Send notification email to admins
+    for admin_email in ADMIN_EMAILS:
+        try:
+            send_email(
+                admin_email,
+                "New User Signup Notification",
+                f"<h3>New Signup</h3><p>User: {user_name} ({user_email})<br>User ID: <b>{user_id}</b></p>"
+            )
+            print(f"✅ Admin notification sent to {admin_email}")
+        except Exception as e:
+            print(f"❌ Failed to send admin notification to {admin_email}: {e}")
+
+# def send_signup_notifications(user_id: str, user_email: str, username: str, mobile: str, joining_date: str):
+   
+#     user_subject = "Welcome to The Gym By Johnson!"
+#     user_body = f"""
+#     <p>Hi {username},</p>
+#     <p>Welcome to <b>The Gym By Johnson</b>! Your account has been successfully created.</p>
+#     <p>Your User ID is: <b>{user_id}</b></p>
+#     <p>You can now log in and explore your membership options.</p>
+#     <br>
+#     <p style="font-size: 12px; color: gray;">This is an automated email from <strong>The Gym By Johnson</strong>.</p>
+#     """
+#     send_email(user_email, user_subject, user_body)
+
+    
+#     admin_email = "rohithvaddepally4@gmail.com"  
+#     admin_subject = f"New User Signup: {username} (ID: {user_id})"
+#     admin_body = f"""
+#     <p>Dear Admin,</p>
+#     <p>A new user has just signed up:</p>
+#     <p>
+#         <b>User ID:</b> {user_id}<br>
+#         <b>Name:</b> {username}<br>
+#         <b>Email:</b> {user_email}<br>
+#         <b>Mobile:</b> {mobile}<br>
+#         <b>Joining Date:</b> {joining_date}
+#     </p>
+#     <hr>
+#     <p style="font-size: 12px; color: gray;">This is an automated notification from <strong>The Gym By Johnson</strong>.</p>
+#     """
+#     send_email(admin_email, admin_subject, admin_body)
+
+
+
 
 
 def send_email_otp(receiver_email: str, otp: str):
@@ -167,7 +256,7 @@ def send_email_otp(receiver_email: str, otp: str):
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(sender_email, sender_password)
-        server.sendmail(sender_email, receiver_email, msg.as_string())
+        send_email(sender_email, receiver_email, msg.as_string())
 
 
 

@@ -613,3 +613,70 @@ a#forgot-password:hover {
   color: darkred;
   text-decoration: underline;
 }
+
+
+@media only screen and (max-width: 430px) {
+
+  .container.sign-in .col.sign-in {
+  transform: translateY(-50%) !important;
+  /* z-index: 10; */
+}
+
+
+.container.sign-up .col.sign-up {
+  transform: translateY(-45%) !important;
+  /* z-index: 10; */
+}
+
+
+  .text h2 {
+    font-size: 1.6rem;
+    background: linear-gradient(to right, #ffffff, #ff9800, #f44336); /* white → orange → red */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  }
+
+  .form-wrapper {
+    padding: 0 0.5rem;
+  }
+
+  .input-group input {
+    padding: 0.7rem 2rem;
+    font-size: 0.9rem;
+  }
+
+  .input-group .icon {
+    position: absolute;
+    top: 50%;
+    left: 0.5rem;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #777;
+  }
+
+  .toggle-password {
+    right: 1rem !important;
+    font-size: 1.3rem;
+  }
+
+  .form button {
+    font-size: 0.95rem;
+    padding: 0.45rem 0;
+  }
+
+  #generateCaptchaBtn,
+  #captchaInput {
+    font-size: 0.9rem;
+  }
+
+  a#forgot-password {
+    font-size: 0.85rem;
+  }
+
+  a#forgot-password:hover {
+    font-size: 0.85rem;
+    color: #DB4437;
+    text-decoration: underline;
+  }
+}
