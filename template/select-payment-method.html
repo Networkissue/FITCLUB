@@ -291,10 +291,52 @@
     </div>
   </div>
 
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="confirmOverlay">
+    <div class="modal">
+      <h3 id="confirmTitle">Confirm Action</h3>
+      <p id="confirmMessage">Are you sure you want to continue?</p>
+      <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+        <button id="confirmYes" style="background:#f0860d; color:#fff;">Yes</button>
+        <button id="confirmCancel" style="background:#e0e0e0; color:#333;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const amount = "{{ amount }}";
+    const plan = "{{ plan }}";
 
+    const confirmOverlay = document.getElementById("confirmOverlay");
+    const confirmYes = document.getElementById("confirmYes");
+    const confirmCancel = document.getElementById("confirmCancel");
+
+    let confirmAction = null;
+
+    // Show confirmation modal
+    const showConfirm = (title, message, action) => {
+      document.getElementById("confirmTitle").innerText = title;
+      document.getElementById("confirmMessage").innerText = message;
+      confirmOverlay.style.display = "flex";
+      confirmAction = action;
+    };
+
+    // Cancel button → reload same page with params
+    confirmCancel.onclick = () => {
+      confirmOverlay.style.display = "none";
+      window.location.href = `/select-payment-method?amount=${amount}&plan=${plan}`;
+    };
+
+    // Yes button → run stored action
+    confirmYes.onclick = () => {
+      confirmOverlay.style.display = "none";
+      if (typeof confirmAction === "function") {
+        confirmAction();
+      }
+    };
+
+    // Show success/error modal
     const showModal = (title, message, redirectUrl = null) => {
       document.getElementById("modalTitle").innerText = title;
       document.getElementById("modalMessage").innerText = message;
@@ -309,7 +351,8 @@
       };
     };
 
-    document.getElementById("payOnlineBtn").addEventListener("click", async () => {
+    // ===================== ONLINE PAYMENT =====================
+    async function handlePayOnline() {
       const orderRes = await fetch("/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -324,7 +367,7 @@
         amount: orderData.amount,
         currency: "INR",
         name: "The Gym by Johnson",
-        description: "Membership Plan",
+        description: plan + " Membership Plan",
         order_id: orderData.order_id,
         handler: async function (response) {
           const verifyRes = await fetch("/verify-payment", {
@@ -335,7 +378,8 @@
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_signature: response.razorpay_signature,
-              amount: parseInt(amount)
+              amount: parseInt(amount),
+              plan: plan
             })
           });
 
@@ -350,14 +394,16 @@
       };
 
       new Razorpay(options).open();
-    });
+    }
 
-    document.getElementById("payOfflineBtn").addEventListener("click", async () => {
+    // ===================== OFFLINE PAYMENT =====================
+    async function handlePayOffline() {
       const spinnerOverlay = document.getElementById("spinnerOverlay");
       spinnerOverlay.style.display = "flex"; // Show spinner
 
       const formData = new URLSearchParams();
       formData.append("amount", parseInt(amount));
+      formData.append("plan", plan);
 
       try {
         const response = await fetch("/offline-payment-request", {
@@ -379,9 +425,25 @@
         spinnerOverlay.style.display = "none";
         showModal("Error", "Network error. Please try again.");
       }
+    }
+
+    // ===================== BUTTON LISTENERS =====================
+    document.getElementById("payOnlineBtn").addEventListener("click", () => {
+      showConfirm(
+        "Proceed with Online Payment?",
+        "Are you sure you want to continue with online payment?",
+        handlePayOnline
+      );
     });
 
-  
+    document.getElementById("payOfflineBtn").addEventListener("click", () => {
+      showConfirm(
+        "Proceed with Offline Payment?",
+        "Are you sure you want to continue with cash payment?",
+        handlePayOffline
+      );
+    });
   </script>
+
 </body>
 </html>
