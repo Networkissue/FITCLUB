@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, HTTPException, Cookie, Form, Query, BackgroundTasks
-from fastapi.responses import JSONResponse, RedirectResponse, Response
+from fastapi.responses import JSONResponse, RedirectResponse, Response, FileResponse
 from fastapi.templating import Jinja2Templates
 from routes.jwt import create_access_token, get_user_by_cookie
 from database.database import user_data, payment_due, get_user_by_email, payment_history, get_membership_plan, offline_payments
@@ -14,6 +14,7 @@ import razorpay
 from dateutil.parser import parse as parse_datetime
 from typing import Optional
 from email.mime.multipart import MIMEMultipart
+import html
 
 
 
@@ -21,47 +22,69 @@ signin_router = APIRouter()
 templates = Jinja2Templates(directory="template")
 pwd_hash = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-from fastapi import APIRouter, Response
-from datetime import datetime
 
-signin_router = APIRouter()
+@signin_router.get("/_ah/warmup")
+async def warmup():
+    return {"status": "ok"}
 
-@signin_router.get("/sitemap.xml", response_class=Response, tags=["SEO"])
+@signin_router.get("/_ah/health")
+async def health():
+    return {"status": "healthy"}
+
+
+# @signin_router.get("/sitemap.xml", response_class=FileResponse, tags=["SEO"])
+# async def sitemap():
+#     return FileResponse("static/sitemap.xml", media_type="application/xml")
+
+
+@signin_router.get("/sitemap.xml", response_class=Response)
 async def sitemap():
-    try:
-        # Define your important URLs, including the payment plan URLs
-        urls = [
-            {"loc": "https://www.thegymbyjohnson.com/", "priority": "1.0", "changefreq": "daily"},
-            {"loc": "https://www.thegymbyjohnson.com/signin", "priority": "0.8", "changefreq": "daily"},
-            {"loc": "https://www.thegymbyjohnson.com/forgot-password", "priority": "0.9", "changefreq": "weekly"},
-            {"loc": "https://www.thegymbyjohnson.com/users", "priority": "0.7", "changefreq": "weekly"},
-            {"loc": "https://www.thegymbyjohnson.com/offline-requests", "priority": "0.6", "changefreq": "weekly"},
-            {"loc": "https://www.thegymbyjohnson.com/pro", "priority": "0.6", "changefreq": "weekly"},
-            # Adding the payment plan URLs
-            {"loc": "https://www.thegymbyjohnson.com/select-payment-method?amount=1500&plan=Premium%20Plan%2Fmonth", "priority": "0.5", "changefreq": "monthly"},
-            {"loc": "https://www.thegymbyjohnson.com/select-payment-method?amount=900&plan=Basic%20Plan%2Fmonth", "priority": "0.5", "changefreq": "monthly"},
-            {"loc": "https://www.thegymbyjohnson.com/select-payment-method?amount=3500&plan=Pro%20Plan%2Fmonth", "priority": "0.5", "changefreq": "monthly"}
-        ]
+    today = datetime.utcnow().strftime("%Y-%m-%d")
 
-        # Build XML
-        xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        
-        for url in urls:
-            xml_content += "  <url>\n"
-            xml_content += f"    <loc>{url['loc']}</loc>\n"
-            xml_content += f"    <priority>{url['priority']}</priority>\n"
-            xml_content += f"    <changefreq>{url['changefreq']}</changefreq>\n"
-            xml_content += f"    <lastmod>{datetime.utcnow().date()}</lastmod>\n"
-            xml_content += "  </url>\n"
+    # Your sitemap content
+    xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.thegymbyjohnson.com/</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.thegymbyjohnson.com/signin</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.thegymbyjohnson.com/forgot-password</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.thegymbyjohnson.com/users</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.thegymbyjohnson.com/offline-requests</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.thegymbyjohnson.com/pro</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>"""
 
-        xml_content += "</urlset>"
+    # Tell browser/Google it's XML
+    return Response(content=xml_content, media_type="application/xml")
 
-        return Response(content=xml_content, media_type="application/xml")
-
-    except Exception as e:
-        # Return JSON error response if something goes wrong
-        return JSONResponse(content={"detail": f"Server error: {str(e)}"}, status_code=500)
 
 
 

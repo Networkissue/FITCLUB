@@ -25,3 +25,6 @@ def get_membership_plan(amount):
         return "Pro"
     else:
         return "NA"
+    
+
+
